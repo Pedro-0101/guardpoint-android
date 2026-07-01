@@ -291,10 +291,10 @@ CREATED → STARTED → [executando GPS + Timer]
 
 ### Fase 1 — Fundação
 - [x] Scaffold do projeto Android (Gradle, estrutura de diretórios)
-- [ ] Configurar Hilt (DI)
-- [ ] Configurar Retrofit + OkHttp + AuthInterceptor
-- [ ] Configurar Room (Database, DAOs, Entidades)
-- [ ] Tema e style base (Material Design 3)
+- [x] Configurar Hilt (DI)
+- [x] Configurar Retrofit + OkHttp + AuthInterceptor
+- [x] Configurar Room (Database, DAOs, Entidades)
+- [x] Tema e style base (Material Design 3)
 
 ### Fase 2 — Autenticação
 - [ ] LoginActivity + LoginViewModel
