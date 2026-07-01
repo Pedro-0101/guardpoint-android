@@ -2,7 +2,7 @@ package com.guardpoint.android.data.remote.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoginResponse {
+public class RefreshResponse {
 
     @SerializedName("access_token")
     private String accessToken;
@@ -10,13 +10,12 @@ public class LoginResponse {
     @SerializedName("refresh_token")
     private String refreshToken;
 
-    @SerializedName("expires_in")
-    private long expiresIn;
+    public RefreshResponse() {
+    }
 
-    @SerializedName("usuario")
-    private UsuarioResponse usuario;
-
-    public LoginResponse() {
+    public RefreshResponse(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public String getAccessToken() {
@@ -33,21 +32,5 @@ public class LoginResponse {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
-    }
-
-    public long getExpiresIn() {
-        return expiresIn;
-    }
-
-    public void setExpiresIn(long expiresIn) {
-        this.expiresIn = expiresIn;
-    }
-
-    public UsuarioResponse getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(UsuarioResponse usuario) {
-        this.usuario = usuario;
     }
 }

@@ -13,6 +13,7 @@ public final class Constants {
     public static final String KEY_REFRESH_TOKEN = "refresh_token";
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_COMPANY_ID = "company_id";
+    public static final String KEY_BIOMETRIC_ENABLED = "biometric_enabled";
 
     public static final String CHANNEL_SERVICE = "guardpoint_service";
     public static final String CHANNEL_ALERTS = "guardpoint_alerts";

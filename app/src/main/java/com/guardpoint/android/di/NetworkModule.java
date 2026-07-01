@@ -21,9 +21,12 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor) {
+    public OkHttpClient provideOkHttpClient(
+            AuthInterceptor authInterceptor,
+            AuthInterceptor.TokenAuthenticator tokenAuthenticator) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(authInterceptor);
+        builder.authenticator(tokenAuthenticator);
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

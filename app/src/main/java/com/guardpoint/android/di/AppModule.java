@@ -3,6 +3,8 @@ package com.guardpoint.android.di;
 import android.content.Context;
 
 import com.guardpoint.android.data.local.prefs.SecurePrefs;
+import com.guardpoint.android.data.repository.AuthRepositoryImpl;
+import com.guardpoint.android.domain.repository.AuthRepository;
 
 import javax.inject.Singleton;
 
@@ -20,5 +22,11 @@ public class AppModule {
     @Singleton
     public SecurePrefs provideSecurePrefs(@ApplicationContext Context context) {
         return new SecurePrefs(context);
+    }
+
+    @Provides
+    @Singleton
+    public AuthRepository provideAuthRepository(AuthRepositoryImpl impl) {
+        return impl;
     }
 }

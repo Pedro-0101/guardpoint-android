@@ -63,6 +63,14 @@ public class SecurePrefs {
         return prefs.getString(Constants.KEY_COMPANY_ID, null);
     }
 
+    public void saveBiometricEnabled(boolean enabled) {
+        prefs.edit().putBoolean(Constants.KEY_BIOMETRIC_ENABLED, enabled).apply();
+    }
+
+    public boolean isBiometricEnabled() {
+        return prefs.getBoolean(Constants.KEY_BIOMETRIC_ENABLED, false);
+    }
+
     public void clear() {
         prefs.edit().clear().apply();
     }

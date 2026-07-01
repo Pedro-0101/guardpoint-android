@@ -297,11 +297,11 @@ CREATED → STARTED → [executando GPS + Timer]
 - [x] Tema e style base (Material Design 3)
 
 ### Fase 2 — Autenticação
-- [ ] LoginActivity + LoginViewModel
-- [ ] Integração com BiometricPrompt
-- [ ] Chamada à API `/auth/login` e `/auth/biometric`
-- [ ] Armazenamento seguro do JWT (EncryptedSharedPreferences)
-- [ ] Auto-refresh de token (AuthInterceptor)
+- [x] LoginActivity + LoginViewModel
+- [x] Integração com BiometricPrompt
+- [x] Chamada à API `/auth/login` e `/auth/biometric`
+- [x] Armazenamento seguro do JWT (EncryptedSharedPreferences)
+- [x] Auto-refresh de token (AuthInterceptor)
 
 ### Fase 3 — Home e Status do Turno
 - [ ] HomeActivity / HomeFragment

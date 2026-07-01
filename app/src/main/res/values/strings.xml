@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GuardPoint</string>
+
+    <string name="login_title">Sign in to GuardPoint</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_biometric_hint">Sign in with biometrics</string>
+    <string name="login_biometric_title">Biometric Authentication</string>
+    <string name="login_biometric_subtitle">Use your fingerprint or face to sign in</string>
+    <string name="login_biometric_error">Biometric authentication failed</string>
+    <string name="login_error_empty_fields">Please fill in email and password</string>
+    <string name="login_error_invalid_email">Invalid email</string>
 </resources>
