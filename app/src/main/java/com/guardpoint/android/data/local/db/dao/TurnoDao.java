@@ -20,6 +20,9 @@ public interface TurnoDao {
     @Update
     void update(TurnoAtivo turnoAtivo);
 
+    @Query("DELETE FROM turno_ativo WHERE turnoId = :turnoId")
+    void deleteByTurnoId(String turnoId);
+
     @Query("DELETE FROM turno_ativo")
     void delete();
 }

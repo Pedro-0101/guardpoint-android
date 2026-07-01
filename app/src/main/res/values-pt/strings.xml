@@ -12,4 +12,29 @@
     <string name="login_biometric_error">Falha na autenticação biométrica</string>
     <string name="login_error_empty_fields">Preencha email e senha</string>
     <string name="login_error_invalid_email">Email inválido</string>
+
+    <string name="home_posto_label">Posto</string>
+    <string name="home_timer_label">Tempo restante</string>
+    <string name="home_start_shift">Iniciar Turno</string>
+    <string name="home_checkin_button">Check-in</string>
+    <string name="home_no_shift">Nenhum turno ativo</string>
+    <string name="home_your_location">Sua localização</string>
+    <string name="home_location_permission_required">Permissão de localização é necessária</string>
+    <string name="home_shift_started">Turno iniciado com sucesso</string>
+    <string name="home_finalize_shift">Finalizar Turno</string>
+    <string name="home_finalize_title">Finalizar Turno</string>
+    <string name="home_finalize_message">Tem certeza que deseja finalizar o turno?</string>
+    <string name="home_finalize_confirm">Finalizar</string>
+    <string name="home_shift_ended">Turno finalizado com sucesso</string>
+
+    <string name="checkin_title">Confirmar Presença</string>
+    <string name="checkin_subtitle">Digite sua senha para confirmar</string>
+    <string name="checkin_password_hint">Senha</string>
+    <string name="checkin_coercion_section">Apenas em emergência</string>
+    <string name="checkin_coercion_hint">Senha de coação</string>
+    <string name="checkin_confirm">Confirmar</string>
+    <string name="checkin_success">Check-in realizado com sucesso</string>
+    <string name="checkin_error_empty">Digite sua senha</string>
+    <string name="checkin_biometric_title">Autenticação biométrica</string>
+    <string name="checkin_biometric_subtitle">Confirme sua identidade antes do check-in</string>
 </resources>

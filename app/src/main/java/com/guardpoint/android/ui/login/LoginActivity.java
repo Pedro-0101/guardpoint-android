@@ -200,7 +200,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToHome() {
-        Toast.makeText(this, "Login realizado com sucesso", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, com.guardpoint.android.ui.home.HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void setLoading(boolean loading) {

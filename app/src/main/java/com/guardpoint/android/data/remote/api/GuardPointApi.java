@@ -1,10 +1,18 @@
 package com.guardpoint.android.data.remote.api;
 
 import com.guardpoint.android.data.remote.dto.BiometricRequest;
+import com.guardpoint.android.data.remote.dto.CheckinRequest;
+import com.guardpoint.android.data.remote.dto.FinalizarTurnoRequest;
+import com.guardpoint.android.data.remote.dto.GenericResponse;
 import com.guardpoint.android.data.remote.dto.LoginRequest;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.data.remote.dto.RefreshRequest;
 import com.guardpoint.android.data.remote.dto.RefreshResponse;
+import com.guardpoint.android.data.remote.dto.SabotagemRequest;
+import com.guardpoint.android.data.remote.dto.TurnoIniciarRequest;
+import com.guardpoint.android.data.remote.dto.TurnoResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -26,4 +34,19 @@ public interface GuardPointApi {
 
     @POST("auth/logout")
     Call<Void> logout(@Body BiometricRequest request);
+
+    @POST("turnos/iniciar")
+    Call<TurnoResponse> iniciarTurno(@Body TurnoIniciarRequest request);
+
+    @POST("turnos/checkin")
+    Call<TurnoResponse> checkin(@Body CheckinRequest request);
+
+    @POST("turnos/finalizar")
+    Call<GenericResponse> finalizarTurno(@Body FinalizarTurnoRequest request);
+
+    @POST("turnos/sabotagem")
+    Call<GenericResponse> sabotagem(@Body SabotagemRequest request);
+
+    @POST("checkins/lote")
+    Call<GenericResponse> enviarLote(@Body List<CheckinRequest> checkins);
 }

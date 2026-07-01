@@ -4,7 +4,11 @@ import android.content.Context;
 
 import com.guardpoint.android.data.local.prefs.SecurePrefs;
 import com.guardpoint.android.data.repository.AuthRepositoryImpl;
+import com.guardpoint.android.data.repository.CheckinRepositoryImpl;
+import com.guardpoint.android.data.repository.TurnoRepositoryImpl;
 import com.guardpoint.android.domain.repository.AuthRepository;
+import com.guardpoint.android.domain.repository.CheckinRepository;
+import com.guardpoint.android.domain.repository.TurnoRepository;
 
 import javax.inject.Singleton;
 
@@ -27,6 +31,18 @@ public class AppModule {
     @Provides
     @Singleton
     public AuthRepository provideAuthRepository(AuthRepositoryImpl impl) {
+        return impl;
+    }
+
+    @Provides
+    @Singleton
+    public TurnoRepository provideTurnoRepository(TurnoRepositoryImpl impl) {
+        return impl;
+    }
+
+    @Provides
+    @Singleton
+    public CheckinRepository provideCheckinRepository(CheckinRepositoryImpl impl) {
         return impl;
     }
 }

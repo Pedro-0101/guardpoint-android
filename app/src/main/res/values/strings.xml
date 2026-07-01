@@ -12,4 +12,29 @@
     <string name="login_biometric_error">Biometric authentication failed</string>
     <string name="login_error_empty_fields">Please fill in email and password</string>
     <string name="login_error_invalid_email">Invalid email</string>
+
+    <string name="home_posto_label">Post</string>
+    <string name="home_timer_label">Time remaining</string>
+    <string name="home_start_shift">Start Shift</string>
+    <string name="home_checkin_button">Check-in</string>
+    <string name="home_no_shift">No active shift</string>
+    <string name="home_your_location">Your location</string>
+    <string name="home_location_permission_required">Location permission is required</string>
+    <string name="home_shift_started">Shift started successfully</string>
+    <string name="home_finalize_shift">End Shift</string>
+    <string name="home_finalize_title">End Shift</string>
+    <string name="home_finalize_message">Are you sure you want to end your shift?</string>
+    <string name="home_finalize_confirm">End</string>
+    <string name="home_shift_ended">Shift ended successfully</string>
+
+    <string name="checkin_title">Confirm Presence</string>
+    <string name="checkin_subtitle">Enter your password to confirm</string>
+    <string name="checkin_password_hint">Password</string>
+    <string name="checkin_coercion_section">Emergency only</string>
+    <string name="checkin_coercion_hint">Coercion password</string>
+    <string name="checkin_confirm">Confirm</string>
+    <string name="checkin_success">Check-in successful</string>
+    <string name="checkin_error_empty">Enter your password</string>
+    <string name="checkin_biometric_title">Biometric Authentication</string>
+    <string name="checkin_biometric_subtitle">Confirm your identity before checking in</string>
 </resources>

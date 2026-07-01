@@ -27,3 +27,7 @@
 # OkHttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
+
+# OSMDroid
+-keep class org.osmdroid.** { *; }
+-dontwarn org.osmdroid.**
