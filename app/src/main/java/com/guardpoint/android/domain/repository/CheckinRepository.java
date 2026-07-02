@@ -7,9 +7,9 @@ import com.guardpoint.android.domain.model.Turno;
 
 public interface CheckinRepository {
 
-    LiveData<Resource<Turno>> realizarCheckin(String turnoId, String tipoSenha,
+    LiveData<Resource<Turno>> realizarCheckin(String turnoId, String senha, String tipoSenha,
                                               double latitude, double longitude);
 
-    void salvarCheckinPendente(String turnoId, String tipoSenha,
+    void salvarCheckinPendente(String turnoId, String senha, String tipoSenha,
                                double latitude, double longitude);
 }

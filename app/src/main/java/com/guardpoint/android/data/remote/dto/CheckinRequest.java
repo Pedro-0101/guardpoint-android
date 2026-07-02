@@ -13,6 +13,9 @@ public class CheckinRequest {
     @SerializedName("longitude")
     private double longitude;
 
+    @SerializedName("senha")
+    private String senha;
+
     @SerializedName("tipo_senha")
     private String tipoSenha;
 
@@ -23,10 +26,11 @@ public class CheckinRequest {
     }
 
     public CheckinRequest(String turnoId, double latitude, double longitude,
-                          String tipoSenha, String timestamp) {
+                          String senha, String tipoSenha, String timestamp) {
         this.turnoId = turnoId;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.senha = senha;
         this.tipoSenha = tipoSenha;
         this.timestamp = timestamp;
     }
@@ -53,6 +57,14 @@ public class CheckinRequest {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public String getTipoSenha() {

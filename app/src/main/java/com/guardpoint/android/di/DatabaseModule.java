@@ -27,7 +27,8 @@ public class DatabaseModule {
                 context.getApplicationContext(),
                 AppDatabase.class,
                 "guardpoint.db"
-        ).build();
+        ).fallbackToDestructiveMigration()
+        .build();
     }
 
     @Provides

@@ -37,4 +37,5 @@
     <string name="checkin_error_empty">Digite sua senha</string>
     <string name="checkin_biometric_title">Autenticação biométrica</string>
     <string name="checkin_biometric_subtitle">Confirme sua identidade antes do check-in</string>
+    <string name="checkin_no_authenticator">Dispositivo sem autenticação configurada. Configure PIN, senha ou biometria nas configurações do aparelho para realizar o check-in.</string>
 </resources>

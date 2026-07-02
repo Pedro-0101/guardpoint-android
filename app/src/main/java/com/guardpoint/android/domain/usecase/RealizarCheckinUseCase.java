@@ -17,8 +17,8 @@ public class RealizarCheckinUseCase {
         this.checkinRepository = checkinRepository;
     }
 
-    public LiveData<Resource<Turno>> executar(String turnoId, String tipoSenha,
+    public LiveData<Resource<Turno>> executar(String turnoId, String senha, String tipoSenha,
                                               double latitude, double longitude) {
-        return checkinRepository.realizarCheckin(turnoId, tipoSenha, latitude, longitude);
+        return checkinRepository.realizarCheckin(turnoId, senha, tipoSenha, latitude, longitude);
     }
 }

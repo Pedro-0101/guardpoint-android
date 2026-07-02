@@ -310,12 +310,12 @@ CREATED → STARTED → [executando GPS + Timer]
 - [ ] Exibição de mapa simplificado (Google Maps / OSMDroid)
 
 ### Fase 4 — Check-in
-- [ ] CheckinActivity / CheckinFragment
-- [ ] BiometricPrompt antes da tela de senha
-- [ ] Campo de senha normal + campo de senha de coação
-- [ ] Chamada à API `/turnos/checkin`
-- [ ] Feedback visual de sucesso
-- [ ] Atualização do timer local e Room
+- [x] CheckinActivity / CheckinFragment
+- [x] BiometricPrompt antes da tela de senha
+- [x] Campo de senha normal + campo de senha de coação
+- [x] Chamada à API `/turnos/checkin`
+- [x] Feedback visual de sucesso
+- [x] Atualização do timer local e Room
 
 ### Fase 5 — Foreground Service e GPS
 - [ ] GuardPointForegroundService (Lifecycle)

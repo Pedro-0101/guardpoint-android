@@ -3,6 +3,8 @@ package com.guardpoint.android.ui.checkin;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,19 +100,12 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                if (!biometricAvailable) {
-                    onBiometricSuccess();
-                } else {
-                    tvError.setText(errString);
-                    tvError.setVisibility(View.VISIBLE);
-                }
+                tvError.setText(errString);
+                tvError.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onAuthenticationFailed() {
-                if (!biometricAvailable) {
-                    onBiometricSuccess();
-                }
             }
         });
 
@@ -129,7 +124,12 @@ public class CheckinActivity extends AppCompatActivity {
         if (biometricAvailable) {
             biometricPrompt.authenticate(promptInfo);
         } else {
-            onBiometricSuccess();
+            tvError.setText(R.string.checkin_no_authenticator);
+            tvError.setVisibility(View.VISIBLE);
+            tvError.setOnClickListener(v -> {
+                Intent intent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+                startActivity(intent);
+            });
         }
     }
 
@@ -159,7 +159,7 @@ public class CheckinActivity extends AppCompatActivity {
         }
 
         setLoading(true);
-        viewModel.realizarCheckin(tipoSenha);
+        viewModel.realizarCheckin(senhaFinal, tipoSenha);
     }
 
     private void setLoading(boolean loading) {
@@ -181,15 +181,14 @@ public class CheckinActivity extends AppCompatActivity {
                     setLoading(false);
                     onCheckinSuccess(resource.getData());
                     break;
+                case OFFLINE_SAVED:
+                    setLoading(false);
+                    onCheckinSuccess(null);
+                    break;
                 case ERROR:
                     setLoading(false);
-                    String msg = resource.getMessage();
-                    if (msg != null && msg.contains("offline")) {
-                        onCheckinSuccess(null);
-                    } else {
-                        tvError.setText(msg);
-                        tvError.setVisibility(View.VISIBLE);
-                    }
+                    tvError.setText(resource.getMessage());
+                    tvError.setVisibility(View.VISIBLE);
                     break;
             }
         });

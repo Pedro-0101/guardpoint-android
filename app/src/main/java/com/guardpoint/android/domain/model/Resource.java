@@ -36,6 +36,10 @@ public class Resource<T> {
         return new Resource<>(Status.ERROR, data, message);
     }
 
+    public static <T> Resource<T> offlineSaved() {
+        return new Resource<>(Status.OFFLINE_SAVED, null, null);
+    }
+
     @NonNull
     public Status getStatus() {
         return status;
@@ -63,9 +67,14 @@ public class Resource<T> {
         return status == Status.ERROR;
     }
 
+    public boolean isOfflineSaved() {
+        return status == Status.OFFLINE_SAVED;
+    }
+
     public enum Status {
         LOADING,
         SUCCESS,
-        ERROR
+        ERROR,
+        OFFLINE_SAVED
     }
 }

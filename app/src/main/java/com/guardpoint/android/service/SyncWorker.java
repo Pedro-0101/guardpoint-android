@@ -57,7 +57,7 @@ public class SyncWorker extends Worker {
         for (CheckinPendente p : pendentes) {
             CheckinRequest request = new CheckinRequest(
                     p.turnoId, p.latitude, p.longitude,
-                    p.tipoSenha, p.timestampCriacao
+                    p.senha, p.tipoSenha, p.timestampCriacao
             );
             requests.add(request);
             ids.add(p.id);

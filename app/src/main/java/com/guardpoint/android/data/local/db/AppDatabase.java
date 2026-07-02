@@ -8,7 +8,7 @@ import com.guardpoint.android.data.local.db.dao.TurnoDao;
 import com.guardpoint.android.data.local.db.entity.CheckinPendente;
 import com.guardpoint.android.data.local.db.entity.TurnoAtivo;
 
-@Database(entities = {CheckinPendente.class, TurnoAtivo.class}, version = 1)
+@Database(entities = {CheckinPendente.class, TurnoAtivo.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CheckinDao checkinDao();

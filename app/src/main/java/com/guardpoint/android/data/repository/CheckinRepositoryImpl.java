@@ -48,13 +48,13 @@ public class CheckinRepositoryImpl implements CheckinRepository {
     }
 
     @Override
-    public LiveData<Resource<Turno>> realizarCheckin(String turnoId, String tipoSenha,
+    public LiveData<Resource<Turno>> realizarCheckin(String turnoId, String senha, String tipoSenha,
                                                      double latitude, double longitude) {
         MutableLiveData<Resource<Turno>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
         String timestamp = java.time.Instant.now().toString();
-        CheckinRequest request = new CheckinRequest(turnoId, latitude, longitude, tipoSenha, timestamp);
+        CheckinRequest request = new CheckinRequest(turnoId, latitude, longitude, senha, tipoSenha, timestamp);
 
         api.checkin(request).enqueue(new Callback<TurnoResponse>() {
             @Override
@@ -88,9 +88,9 @@ public class CheckinRepositoryImpl implements CheckinRepository {
 
             @Override
             public void onFailure(@NonNull Call<TurnoResponse> call, @NonNull Throwable t) {
-                salvarCheckinPendente(turnoId, tipoSenha, latitude, longitude);
+                salvarCheckinPendente(turnoId, senha, tipoSenha, latitude, longitude);
                 SyncWorker.agendarSincronizacao(appContext);
-                result.setValue(Resource.error(t.getMessage() != null ? t.getMessage() : "Sem conexão — salvo offline"));
+                result.setValue(Resource.offlineSaved());
             }
         });
 
@@ -98,7 +98,7 @@ public class CheckinRepositoryImpl implements CheckinRepository {
     }
 
     @Override
-    public void salvarCheckinPendente(String turnoId, String tipoSenha,
+    public void salvarCheckinPendente(String turnoId, String senha, String tipoSenha,
                                       double latitude, double longitude) {
         executor.execute(() -> {
             CheckinPendente pendente = new CheckinPendente();
@@ -106,6 +106,7 @@ public class CheckinRepositoryImpl implements CheckinRepository {
             pendente.latitude = latitude;
             pendente.longitude = longitude;
             pendente.timestampCriacao = java.time.Instant.now().toString();
+            pendente.senha = senha;
             pendente.tipoSenha = tipoSenha;
             pendente.tentativasEnvio = 0;
             checkinDao.insert(pendente);

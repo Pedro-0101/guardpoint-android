@@ -20,6 +20,9 @@ public class CheckinPendente {
     public String timestampCriacao;
 
     @NonNull
+    public String senha;
+
+    @NonNull
     public String tipoSenha;
 
     public int tentativasEnvio;

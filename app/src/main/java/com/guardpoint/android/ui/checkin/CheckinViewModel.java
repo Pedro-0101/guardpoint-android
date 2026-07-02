@@ -2,6 +2,7 @@ package com.guardpoint.android.ui.checkin;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.guardpoint.android.domain.model.Resource;
@@ -23,6 +24,14 @@ public class CheckinViewModel extends ViewModel {
     private String turnoId;
     private double latitude;
     private double longitude;
+
+    private LiveData<Resource<Turno>> checkinObservable;
+
+    private final Observer<Resource<Turno>> checkinObserver = resource -> {
+        if (resource != null) {
+            checkinState.postValue(resource);
+        }
+    };
 
     @Inject
     public CheckinViewModel(RealizarCheckinUseCase realizarCheckinUseCase) {
@@ -47,14 +56,24 @@ public class CheckinViewModel extends ViewModel {
         biometricSuccess.setValue(true);
     }
 
-    public void realizarCheckin(String tipoSenha) {
+    public void realizarCheckin(String senha, String tipoSenha) {
         if (turnoId == null) return;
 
         checkinState.setValue(Resource.loading());
 
-        realizarCheckinUseCase.executar(turnoId, tipoSenha, latitude, longitude)
-                .observeForever(resource -> {
-                    checkinState.postValue(resource);
-                });
+        if (checkinObservable != null) {
+            checkinObservable.removeObserver(checkinObserver);
+        }
+
+        checkinObservable = realizarCheckinUseCase.executar(turnoId, senha, tipoSenha, latitude, longitude);
+        checkinObservable.observeForever(checkinObserver);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (checkinObservable != null) {
+            checkinObservable.removeObserver(checkinObserver);
+        }
     }
 }
