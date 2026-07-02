@@ -16,4 +16,6 @@ public interface TurnoRepository {
     void atualizarUltimoCheckin(long timestampMillis);
 
     LiveData<Resource<Void>> finalizarTurno(String turnoId, double latitude, double longitude, String timestamp);
+
+    LiveData<Resource<Void>> reportarSabotagem(String turnoId, double latitude, double longitude, String motivo, String timestamp);
 }

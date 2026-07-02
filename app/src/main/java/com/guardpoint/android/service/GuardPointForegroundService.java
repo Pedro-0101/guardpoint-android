@@ -3,7 +3,9 @@ package com.guardpoint.android.service;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -21,6 +23,7 @@ import com.google.android.gms.location.Priority;
 import com.guardpoint.android.R;
 import com.guardpoint.android.data.local.db.dao.TurnoDao;
 import com.guardpoint.android.data.local.db.entity.TurnoAtivo;
+import com.guardpoint.android.receiver.GpsChangeReceiver;
 import com.guardpoint.android.util.AlarmeHelper;
 import com.guardpoint.android.util.Constants;
 import com.guardpoint.android.util.NetworkMonitor;
@@ -56,6 +59,7 @@ public class GuardPointForegroundService extends Service {
     private TurnoAtivo turnoAtivo;
     private ExecutorService ioExecutor;
     private boolean alertaEnviado = false;
+    private GpsChangeReceiver gpsChangeReceiver;
 
     private final Observer<Long> ultimoCheckinObserver = novoMillis -> {
         if (novoMillis != null && turnoAtivo != null
@@ -75,6 +79,12 @@ public class GuardPointForegroundService extends Service {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         networkMonitor.startMonitoring();
         serviceStateManager.getUltimoCheckinMillis().observeForever(ultimoCheckinObserver);
+
+        gpsChangeReceiver = new GpsChangeReceiver(turnoDao, notificationHelper);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
+        filter.addAction(LocationManager.MODE_CHANGED_ACTION);
+        registerReceiver(gpsChangeReceiver, filter);
     }
 
     @Override
@@ -230,11 +240,20 @@ public class GuardPointForegroundService extends Service {
 
         AlarmeHelper.cancelarAlarme(this);
         notificationHelper.cancelNotification(Constants.NOTIFICATION_ID_ALERT);
+        notificationHelper.cancelNotification(Constants.NOTIFICATION_ID_SABOTAGE_ALERT);
         networkMonitor.stopMonitoring();
         serviceStateManager.getUltimoCheckinMillis().removeObserver(ultimoCheckinObserver);
         serviceStateManager.setServiceRunning(false);
         serviceStateManager.setGpsEnabled(false);
         serviceStateManager.updateTempoRestante("--:--");
+
+        if (gpsChangeReceiver != null) {
+            try {
+                unregisterReceiver(gpsChangeReceiver);
+            } catch (IllegalArgumentException ignored) {
+            }
+            gpsChangeReceiver = null;
+        }
 
         super.onDestroy();
     }

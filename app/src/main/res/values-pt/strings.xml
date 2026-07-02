@@ -59,4 +59,20 @@
     <string name="home_alarm_permission_message">O GuardPoint precisa de permissão para agendar alarmes exatos e assim você receber lembretes de check-in no horário correto. Sem ela, os lembretes podem atrasar.\n\nConceder esta permissão?</string>
     <string name="home_alarm_permission_positive">Abrir Configurações</string>
     <string name="home_alarm_permission_negative">Agora não</string>
+
+    <string name="bloqueio_titulo">GPS Desativado</string>
+    <string name="bloqueio_mensagem">GPS desativado. O turno será reportado como violação.</string>
+    <string name="bloqueio_btn_ativar_gps">Ativar GPS</string>
+    <string name="bloqueio_gps_restaurado">GPS restaurado. Retornando ao aplicativo.</string>
+    <string name="bloqueio_gps_icon_desc">Aviso - GPS desativado</string>
+
+    <string name="notification_channel_sabotage">Alertas de Violação de GPS</string>
+    <string name="notification_channel_sabotage_desc">Alertas críticos quando o GPS é desativado durante o turno</string>
+    <string name="notification_sabotage_title">GPS Desativado - Violação Detectada</string>
+    <string name="notification_sabotage_message">O GPS foi desativado durante seu turno. Isso foi reportado como violação.</string>
+
+    <string name="battery_optimization_title">Desativar Otimização de Bateria</string>
+    <string name="battery_optimization_message">O GuardPoint precisa desativar a otimização de bateria para garantir que o rastreamento GPS e os alertas de check-in funcionem de forma confiável durante seu turno.\n\nPermitir desativar a otimização de bateria?</string>
+    <string name="battery_optimization_positive">Permitir</string>
+    <string name="battery_optimization_negative">Agora não</string>
 </resources>

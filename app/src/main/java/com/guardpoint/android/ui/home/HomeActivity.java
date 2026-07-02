@@ -5,9 +5,11 @@ import android.app.AlarmManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
@@ -349,6 +351,7 @@ public class HomeActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.home_shift_started, Toast.LENGTH_SHORT).show();
 
         solicitarPermissaoAlarmeSeNecessario();
+        solicitarIgnorarOtimizacaoBateria();
     }
 
     private void startForegroundService() {
@@ -380,6 +383,25 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(intent);
                     })
                     .setNegativeButton(R.string.home_alarm_permission_negative, null)
+                    .show();
+        }
+    }
+
+    private void solicitarIgnorarOtimizacaoBateria() {
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (pm == null) return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle(R.string.battery_optimization_title)
+                    .setMessage(R.string.battery_optimization_message)
+                    .setPositiveButton(R.string.battery_optimization_positive, (dialog, which) -> {
+                        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                        intent.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
+                    })
+                    .setNegativeButton(R.string.battery_optimization_negative, null)
                     .show();
         }
     }

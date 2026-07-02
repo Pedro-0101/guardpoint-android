@@ -50,6 +50,16 @@ public class NotificationHelper {
             alertsChannel.setDescription(context.getString(R.string.notification_channel_alerts_desc));
             alertsChannel.enableVibration(true);
             notificationManager.createNotificationChannel(alertsChannel);
+
+            NotificationChannel sabotageChannel = new NotificationChannel(
+                    Constants.CHANNEL_SABOTAGE,
+                    context.getString(R.string.notification_channel_sabotage),
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            sabotageChannel.setDescription(context.getString(R.string.notification_channel_sabotage_desc));
+            sabotageChannel.enableVibration(true);
+            sabotageChannel.setBypassDnd(true);
+            notificationManager.createNotificationChannel(sabotageChannel);
         }
     }
 
@@ -98,6 +108,27 @@ public class NotificationHelper {
 
     public void updateForegroundNotification(int id, Notification notification) {
         notificationManager.notify(id, notification);
+    }
+
+    public void notifySabotagem() {
+        Intent intent = new Intent(context, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        Notification notification = new NotificationCompat.Builder(context, Constants.CHANNEL_SABOTAGE)
+                .setContentTitle(context.getString(R.string.notification_sabotage_title))
+                .setContentText(context.getString(R.string.notification_sabotage_message))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .build();
+
+        notificationManager.notify(Constants.NOTIFICATION_ID_SABOTAGE_ALERT, notification);
     }
 
     public void cancelNotification(int id) {

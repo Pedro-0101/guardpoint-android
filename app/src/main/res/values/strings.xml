@@ -59,4 +59,20 @@
     <string name="home_alarm_permission_message">GuardPoint needs permission to schedule exact alarms so you receive check-in reminders precisely on time. Without it, reminders may be delayed.\n\nGrant this permission?</string>
     <string name="home_alarm_permission_positive">Open Settings</string>
     <string name="home_alarm_permission_negative">Not now</string>
+
+    <string name="bloqueio_titulo">GPS Disabled</string>
+    <string name="bloqueio_mensagem">GPS was disabled. The shift will be reported as a violation.</string>
+    <string name="bloqueio_btn_ativar_gps">Enable GPS</string>
+    <string name="bloqueio_gps_restaurado">GPS restored. Returning to the app.</string>
+    <string name="bloqueio_gps_icon_desc">Warning - GPS disabled</string>
+
+    <string name="notification_channel_sabotage">GPS Violation Alerts</string>
+    <string name="notification_channel_sabotage_desc">Critical alerts when GPS is disabled during a shift</string>
+    <string name="notification_sabotage_title">GPS Disabled - Violation Detected</string>
+    <string name="notification_sabotage_message">GPS was disabled during your shift. This has been reported as a violation.</string>
+
+    <string name="battery_optimization_title">Disable Battery Optimization</string>
+    <string name="battery_optimization_message">GuardPoint needs to disable battery optimization to ensure your GPS tracking and check-in alerts work reliably during your shift.\n\nAllow disabling battery optimization?</string>
+    <string name="battery_optimization_positive">Allow</string>
+    <string name="battery_optimization_negative">Not now</string>
 </resources>

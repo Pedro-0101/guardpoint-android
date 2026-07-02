@@ -51,6 +51,15 @@
             android:exported="false"
             android:theme="@style/Theme.GuardPoint" />
 
+        <activity
+            android:name=".ui.alerta.BloqueioActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GuardPoint.Bloqueio"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

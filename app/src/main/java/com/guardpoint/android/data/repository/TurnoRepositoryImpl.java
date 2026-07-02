@@ -11,6 +11,7 @@ import com.guardpoint.android.data.local.db.entity.TurnoAtivo;
 import com.guardpoint.android.data.remote.api.GuardPointApi;
 import com.guardpoint.android.data.remote.dto.FinalizarTurnoRequest;
 import com.guardpoint.android.data.remote.dto.GenericResponse;
+import com.guardpoint.android.data.remote.dto.SabotagemRequest;
 import com.guardpoint.android.data.remote.dto.TurnoIniciarRequest;
 import com.guardpoint.android.data.remote.dto.TurnoResponse;
 import com.guardpoint.android.domain.model.Resource;
@@ -131,6 +132,32 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                 executor.execute(() -> {
                     turnoDao.deleteByTurnoId(turnoId);
                 });
+                result.setValue(Resource.error(t.getMessage() != null ? t.getMessage() : "Erro de conexão"));
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Resource<Void>> reportarSabotagem(String turnoId, double latitude, double longitude,
+                                                      String motivo, String timestamp) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        SabotagemRequest request = new SabotagemRequest(turnoId, latitude, longitude, motivo, timestamp);
+        api.sabotagem(request).enqueue(new Callback<GenericResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<GenericResponse> call, @NonNull Response<GenericResponse> response) {
+                if (response.isSuccessful()) {
+                    result.setValue(Resource.success(null));
+                } else {
+                    result.setValue(Resource.error("Falha ao reportar sabotagem"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GenericResponse> call, @NonNull Throwable t) {
                 result.setValue(Resource.error(t.getMessage() != null ? t.getMessage() : "Erro de conexão"));
             }
         });

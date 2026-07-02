@@ -35,4 +35,7 @@ public final class Constants {
 
     public static final int ALARM_THRESHOLD_MINUTES = 5;
     public static final int ALARM_REQUEST_CODE = 3001;
+
+    public static final String CHANNEL_SABOTAGE = "guardpoint_sabotage";
+    public static final int NOTIFICATION_ID_SABOTAGE_ALERT = 4001;
 }
