@@ -17,6 +17,7 @@ import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.CheckinRepository;
 import com.guardpoint.android.service.SyncWorker;
+import com.guardpoint.android.util.NetworkMonitor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,22 +37,31 @@ public class CheckinRepositoryImpl implements CheckinRepository {
     private final CheckinDao checkinDao;
     private final TurnoDao turnoDao;
     private final Context appContext;
+    private final NetworkMonitor networkMonitor;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Inject
     public CheckinRepositoryImpl(GuardPointApi api, CheckinDao checkinDao, TurnoDao turnoDao,
-                                 @ApplicationContext Context appContext) {
+                                 @ApplicationContext Context appContext, NetworkMonitor networkMonitor) {
         this.api = api;
         this.checkinDao = checkinDao;
         this.turnoDao = turnoDao;
         this.appContext = appContext;
+        this.networkMonitor = networkMonitor;
     }
 
     @Override
     public LiveData<Resource<Turno>> realizarCheckin(String turnoId, String senha, String tipoSenha,
-                                                     double latitude, double longitude) {
+                                                      double latitude, double longitude) {
         MutableLiveData<Resource<Turno>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
+
+        if (!networkMonitor.isCurrentlyOnline()) {
+            salvarCheckinPendente(turnoId, senha, tipoSenha, latitude, longitude);
+            SyncWorker.agendarSincronizacao(appContext);
+            result.setValue(Resource.offlineSaved());
+            return result;
+        }
 
         String timestamp = java.time.Instant.now().toString();
         CheckinRequest request = new CheckinRequest(turnoId, latitude, longitude, senha, tipoSenha, timestamp);
@@ -99,7 +109,7 @@ public class CheckinRepositoryImpl implements CheckinRepository {
 
     @Override
     public void salvarCheckinPendente(String turnoId, String senha, String tipoSenha,
-                                      double latitude, double longitude) {
+                                       double latitude, double longitude) {
         executor.execute(() -> {
             CheckinPendente pendente = new CheckinPendente();
             pendente.turnoId = turnoId;
@@ -109,7 +119,14 @@ public class CheckinRepositoryImpl implements CheckinRepository {
             pendente.senha = senha;
             pendente.tipoSenha = tipoSenha;
             pendente.tentativasEnvio = 0;
+            pendente.clienteCheckinId = java.util.UUID.randomUUID().toString();
+            pendente.status = CheckinPendente.STATUS_PENDENTE;
             checkinDao.insert(pendente);
         });
+    }
+
+    @Override
+    public LiveData<Integer> getPendentesCount() {
+        return checkinDao.getPendentesCountLive();
     }
 }

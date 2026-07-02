@@ -22,6 +22,9 @@ public class CheckinRequest {
     @SerializedName("timestamp")
     private String timestamp;
 
+    @SerializedName("cliente_checkin_id")
+    private String clienteCheckinId;
+
     public CheckinRequest() {
     }
 
@@ -33,6 +36,18 @@ public class CheckinRequest {
         this.senha = senha;
         this.tipoSenha = tipoSenha;
         this.timestamp = timestamp;
+    }
+
+    public CheckinRequest(String turnoId, double latitude, double longitude,
+                          String senha, String tipoSenha, String timestamp,
+                          String clienteCheckinId) {
+        this.turnoId = turnoId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.senha = senha;
+        this.tipoSenha = tipoSenha;
+        this.timestamp = timestamp;
+        this.clienteCheckinId = clienteCheckinId;
     }
 
     public String getTurnoId() {
@@ -81,5 +96,13 @@ public class CheckinRequest {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getClienteCheckinId() {
+        return clienteCheckinId;
+    }
+
+    public void setClienteCheckinId(String clienteCheckinId) {
+        this.clienteCheckinId = clienteCheckinId;
     }
 }

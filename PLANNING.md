@@ -326,10 +326,13 @@ CREATED → STARTED → [executando GPS + Timer]
 - [ ] Parada absoluta ao finalizar turno
 
 ### Fase 6 — Offline e Resiliência
-- [ ] CheckinPendente: salvar no Room quando sem rede
-- [ ] SyncWorker (WorkManager) para envio de lote
-- [ ] Lógica de retry com backoff exponencial
-- [ ] NetworkMonitor (ConnectivityManager callback)
+- [x] CheckinPendente: salvar no Room quando sem rede
+- [x] SyncWorker (WorkManager) para envio de lote
+- [x] Lógica de retry com backoff exponencial
+- [x] NetworkMonitor (ConnectivityManager callback)
+- [x] Fila offline-first: não apaga em 401/403, preserva itens críticos (coação/finalização)
+- [x] Idempotência: UUID clienteCheckinId gerado na criação e enviado ao server
+- [x] Migration Room v2→v3: adiciona clienteCheckinId + status
 
 ### Fase 7 — Alarmes Locais e Notificações
 - [ ] CheckinAlarmReceiver (AlarmManager)
