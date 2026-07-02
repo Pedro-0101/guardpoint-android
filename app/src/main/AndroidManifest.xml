@@ -14,6 +14,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
+    <!-- SCHEDULE_EXACT_ALARM: app de segurança de vida (life-safety).
+         Preferida à USE_EXACT_ALARM pois é revogável pelo usuário e não requer
+         justificativa especial na Play Store, ao contrário de USE_EXACT_ALARM.
+         Em API < 31, o sistema ignora esta declaração sem erro. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".GuardPointApp"
         android:allowBackup="true"

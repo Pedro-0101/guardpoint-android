@@ -18,6 +18,10 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
+import com.guardpoint.android.util.NetworkMonitor;
+import com.guardpoint.android.util.NotificationHelper;
+import com.guardpoint.android.util.ServiceStateManager;
+
 @Module
 @InstallIn(SingletonComponent.class)
 public class AppModule {
@@ -44,5 +48,23 @@ public class AppModule {
     @Singleton
     public CheckinRepository provideCheckinRepository(CheckinRepositoryImpl impl) {
         return impl;
+    }
+
+    @Provides
+    @Singleton
+    public ServiceStateManager provideServiceStateManager() {
+        return new ServiceStateManager();
+    }
+
+    @Provides
+    @Singleton
+    public NotificationHelper provideNotificationHelper(@ApplicationContext Context context) {
+        return new NotificationHelper(context);
+    }
+
+    @Provides
+    @Singleton
+    public NetworkMonitor provideNetworkMonitor(@ApplicationContext Context context) {
+        return new NetworkMonitor(context);
     }
 }

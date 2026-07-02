@@ -335,10 +335,10 @@ CREATED → STARTED → [executando GPS + Timer]
 - [x] Migration Room v2→v3: adiciona clienteCheckinId + status
 
 ### Fase 7 — Alarmes Locais e Notificações
-- [ ] CheckinAlarmReceiver (AlarmManager)
-- [ ] Alarme 5 minutos antes do deadline
-- [ ] Verificação de conectividade no alarme
-- [ ] Notificação de alta prioridade para deslocamento
+- [x] CheckinAlarmReceiver (AlarmManager)
+- [x] Alarme 5 minutos antes do deadline
+- [x] Verificação de conectividade no alarme
+- [x] Notificação de alta prioridade para deslocamento
 
 ### Fase 8 — Sabotagem e Segurança
 - [ ] BroadcastReceiver para mudanças de GPS/Permissões

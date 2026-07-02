@@ -38,4 +38,25 @@
     <string name="checkin_biometric_title">Autenticação biométrica</string>
     <string name="checkin_biometric_subtitle">Confirme sua identidade antes do check-in</string>
     <string name="checkin_no_authenticator">Dispositivo sem autenticação configurada. Configure PIN, senha ou biometria nas configurações do aparelho para realizar o check-in.</string>
+
+    <string name="notification_channel_service">Serviço GuardPoint</string>
+    <string name="notification_channel_service_desc">Notificação persistente durante o turno ativo</string>
+    <string name="notification_channel_alerts">Alertas GuardPoint</string>
+    <string name="notification_channel_alerts_desc">Alertas de check-in e notificações urgentes</string>
+    <string name="notification_service_active">GuardPoint ativo — Tempo restante: %1$s</string>
+    <string name="notification_checkin_alert_title">Check-in Necessário</string>
+    <string name="notification_checkin_alert_message">Sua janela de check-in está chegando ao fim. Dirija-se ao seu posto.</string>
+    <string name="home_offline_status">Offline — check-ins salvos localmente</string>
+    <string name="home_online_status">Online</string>
+    <string name="home_pending_sync" formatted="true">%d check-in(s) pendentes de envio</string>
+
+    <string name="notification_no_network_title">Sem Rede</string>
+    <string name="notification_no_network_message">Desloque-se para uma área com sinal para realizar o check-in.</string>
+    <string name="notification_deadline_passed_title">Check-in Atrasado</string>
+    <string name="notification_deadline_passed_message">O prazo do check-in expirou. Realize o check-in imediatamente.</string>
+
+    <string name="home_alarm_permission_title">Permissão de Alarme Recomendada</string>
+    <string name="home_alarm_permission_message">O GuardPoint precisa de permissão para agendar alarmes exatos e assim você receber lembretes de check-in no horário correto. Sem ela, os lembretes podem atrasar.\n\nConceder esta permissão?</string>
+    <string name="home_alarm_permission_positive">Abrir Configurações</string>
+    <string name="home_alarm_permission_negative">Agora não</string>
 </resources>

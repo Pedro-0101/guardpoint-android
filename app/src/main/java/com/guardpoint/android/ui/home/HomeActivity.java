@@ -1,11 +1,14 @@
 package com.guardpoint.android.ui.home;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +55,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private TextView tvPostoNome;
     private TextView tvTimer;
+    private TextView tvOfflineIndicator;
     private MaterialButton btnIniciarTurno;
     private MaterialButton btnCheckin;
     private MaterialButton btnFinalizarTurno;
@@ -114,6 +118,7 @@ public class HomeActivity extends AppCompatActivity {
         mapView = findViewById(R.id.mapView);
         tvPostoNome = findViewById(R.id.tvPostoNome);
         tvTimer = findViewById(R.id.tvTimer);
+        tvOfflineIndicator = findViewById(R.id.tvOfflineIndicator);
         btnIniciarTurno = findViewById(R.id.btnIniciarTurno);
         btnCheckin = findViewById(R.id.btnCheckin);
         btnFinalizarTurno = findViewById(R.id.btnFinalizarTurno);
@@ -218,10 +223,13 @@ public class HomeActivity extends AppCompatActivity {
         Turno turno = viewModel.getTurnoAtual();
         if (turno == null) return;
 
+        double lat = getServiceLatitude();
+        double lon = getServiceLongitude();
+
         Intent intent = new Intent(this, CheckinActivity.class);
         intent.putExtra(CheckinActivity.EXTRA_TURNO_ID, turno.getTurnoId());
-        intent.putExtra(CheckinActivity.EXTRA_LATITUDE, currentLatitude);
-        intent.putExtra(CheckinActivity.EXTRA_LONGITUDE, currentLongitude);
+        intent.putExtra(CheckinActivity.EXTRA_LATITUDE, lat);
+        intent.putExtra(CheckinActivity.EXTRA_LONGITUDE, lon);
         checkinLauncher.launch(intent);
     }
 
@@ -230,10 +238,20 @@ public class HomeActivity extends AppCompatActivity {
                 .setTitle(R.string.home_finalize_title)
                 .setMessage(R.string.home_finalize_message)
                 .setPositiveButton(R.string.home_finalize_confirm, (dialog, which) -> {
-                    viewModel.finalizarTurno(currentLatitude, currentLongitude);
+                    viewModel.finalizarTurno(getServiceLatitude(), getServiceLongitude());
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    private double getServiceLatitude() {
+        Double lat = viewModel.getLatitude().getValue();
+        return lat != null ? lat : currentLatitude;
+    }
+
+    private double getServiceLongitude() {
+        Double lon = viewModel.getLongitude().getValue();
+        return lon != null ? lon : currentLongitude;
     }
 
     private void setLoading(boolean loading) {
@@ -265,6 +283,7 @@ public class HomeActivity extends AppCompatActivity {
                 btnIniciarTurno.setVisibility(View.GONE);
                 btnCheckin.setVisibility(View.VISIBLE);
                 btnFinalizarTurno.setVisibility(View.VISIBLE);
+                ensureServiceRunning();
             } else {
                 btnIniciarTurno.setVisibility(View.VISIBLE);
                 btnCheckin.setVisibility(View.GONE);
@@ -296,15 +315,73 @@ public class HomeActivity extends AppCompatActivity {
                 tvPostoNome.setText(nome);
             }
         });
+
+        viewModel.getLatitude().observe(this, lat -> {
+            if (lat != null && lat != 0.0) {
+                currentLatitude = lat;
+            }
+        });
+
+        viewModel.getLongitude().observe(this, lon -> {
+            if (lon != null && lon != 0.0) {
+                currentLongitude = lon;
+            }
+        });
+
+        viewModel.getIsOnline().observe(this, online -> {
+            tvOfflineIndicator.setVisibility(Boolean.TRUE.equals(online) ? View.GONE : View.VISIBLE);
+        });
+
+        viewModel.getPendentesCount().observe(this, count -> {
+            if (count != null && count > 0) {
+                tvOfflineIndicator.setText(getString(R.string.home_pending_sync, count));
+            } else {
+                tvOfflineIndicator.setText(R.string.home_offline_status);
+            }
+        });
     }
 
     private void onTurnoIniciado(Turno turno) {
         if (turno == null) return;
 
-        Intent serviceIntent = new Intent(this, com.guardpoint.android.service.GuardPointForegroundService.class);
-        ContextCompat.startForegroundService(this, serviceIntent);
+        startForegroundService();
 
         Toast.makeText(this, R.string.home_shift_started, Toast.LENGTH_SHORT).show();
+
+        solicitarPermissaoAlarmeSeNecessario();
+    }
+
+    private void startForegroundService() {
+        Intent serviceIntent = new Intent(this, com.guardpoint.android.service.GuardPointForegroundService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    private void ensureServiceRunning() {
+        Boolean running = viewModel.getTurnoAtivo().getValue();
+        if (Boolean.TRUE.equals(running)) {
+            startForegroundService();
+            solicitarPermissaoAlarmeSeNecessario();
+        }
+    }
+
+    private void solicitarPermissaoAlarmeSeNecessario() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager == null) return;
+
+        if (!alarmManager.canScheduleExactAlarms()) {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle(R.string.home_alarm_permission_title)
+                    .setMessage(R.string.home_alarm_permission_message)
+                    .setPositiveButton(R.string.home_alarm_permission_positive, (dialog, which) -> {
+                        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                        intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+                        startActivity(intent);
+                    })
+                    .setNegativeButton(R.string.home_alarm_permission_negative, null)
+                    .show();
+        }
     }
 
     private void onTurnoFinalizado() {

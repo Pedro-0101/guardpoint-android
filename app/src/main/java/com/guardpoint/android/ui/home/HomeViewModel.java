@@ -1,7 +1,5 @@
 package com.guardpoint.android.ui.home;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 
 import androidx.lifecycle.LiveData;
@@ -11,8 +9,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
+import com.guardpoint.android.domain.repository.CheckinRepository;
 import com.guardpoint.android.domain.repository.TurnoRepository;
 import com.guardpoint.android.domain.usecase.IniciarTurnoUseCase;
+import com.guardpoint.android.util.NetworkMonitor;
+import com.guardpoint.android.util.ServiceStateManager;
 
 import javax.inject.Inject;
 
@@ -23,6 +24,9 @@ public class HomeViewModel extends ViewModel {
 
     private final TurnoRepository turnoRepository;
     private final IniciarTurnoUseCase iniciarTurnoUseCase;
+    private final ServiceStateManager serviceStateManager;
+    private final CheckinRepository checkinRepository;
+    private final NetworkMonitor networkMonitor;
 
     private final MutableLiveData<Resource<Turno>> turnoState = new MutableLiveData<>();
     private final MutableLiveData<Resource<Void>> finalizarState = new MutableLiveData<>();
@@ -31,9 +35,9 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> postoNome = new MutableLiveData<>();
     private final MutableLiveData<String> statusTurno = new MutableLiveData<>();
     private final MutableLiveData<String> postoIdLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Double> latitude = new MutableLiveData<>(0.0);
+    private final MutableLiveData<Double> longitude = new MutableLiveData<>(0.0);
 
-    private final Handler timerHandler = new Handler(Looper.getMainLooper());
-    private Runnable timerRunnable;
     private Turno turnoAtual;
 
     private LiveData<Resource<Turno>> turnoAtivoObservable;
@@ -42,20 +46,47 @@ public class HomeViewModel extends ViewModel {
     private Observer<Resource<Turno>> onTurnoAtivoLoaded;
     private Observer<Resource<Turno>> onTurnoIniciado;
 
+    private final Observer<String> onTempoRestante;
+    private final Observer<Double> onLatitude;
+    private final Observer<Double> onLongitude;
+
     @Inject
-    public HomeViewModel(TurnoRepository turnoRepository, IniciarTurnoUseCase iniciarTurnoUseCase) {
+    public HomeViewModel(TurnoRepository turnoRepository, IniciarTurnoUseCase iniciarTurnoUseCase,
+                         ServiceStateManager serviceStateManager,
+                         CheckinRepository checkinRepository,
+                         NetworkMonitor networkMonitor) {
         this.turnoRepository = turnoRepository;
         this.iniciarTurnoUseCase = iniciarTurnoUseCase;
+        this.serviceStateManager = serviceStateManager;
+        this.checkinRepository = checkinRepository;
+        this.networkMonitor = networkMonitor;
+
+        onTempoRestante = tempo -> {
+            if (tempo != null) {
+                tempoRestante.postValue(tempo);
+            }
+        };
+
+        onLatitude = lat -> {
+            if (lat != null) {
+                latitude.postValue(lat);
+            }
+        };
+
+        onLongitude = lon -> {
+            if (lon != null) {
+                longitude.postValue(lon);
+            }
+        };
+
+        serviceStateManager.getTempoRestante().observeForever(onTempoRestante);
+        serviceStateManager.getCurrentLatitude().observeForever(onLatitude);
+        serviceStateManager.getCurrentLongitude().observeForever(onLongitude);
 
         onTurnoAtivoLoaded = resource -> {
             if (resource != null && resource.isSuccess() && resource.getData() != null) {
                 Turno turno = resource.getData();
-                turnoAtual = turno;
-                turnoAtivo.postValue(true);
-                postoNome.postValue(turno.getPostoNome());
-                statusTurno.postValue(turno.getStatus());
-                postoIdLiveData.postValue(turno.getPostoId());
-                iniciarTimer();
+                aplicarTurnoAtivo(turno);
             }
             if (turnoAtivoObservable != null) {
                 turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
@@ -67,17 +98,21 @@ public class HomeViewModel extends ViewModel {
 
             if (resource != null && resource.isSuccess() && resource.getData() != null) {
                 Turno turno = resource.getData();
-                turnoAtual = turno;
-                turnoAtivo.postValue(true);
-                postoNome.postValue(turno.getPostoNome());
-                statusTurno.postValue(turno.getStatus());
-                postoIdLiveData.postValue(turno.getPostoId());
-                iniciarTimer();
+                aplicarTurnoAtivo(turno);
             }
             if (iniciarTurnoObservable != null) {
                 iniciarTurnoObservable.removeObserver(onTurnoIniciado);
             }
         };
+    }
+
+    private void aplicarTurnoAtivo(Turno turno) {
+        turnoAtual = turno;
+        turnoAtivo.postValue(true);
+        postoNome.postValue(turno.getPostoNome());
+        statusTurno.postValue(turno.getStatus());
+        postoIdLiveData.postValue(turno.getPostoId());
+        serviceStateManager.setUltimoCheckinMillis(turno.getUltimoCheckinMillis());
     }
 
     public LiveData<Resource<Turno>> getTurnoState() {
@@ -106,6 +141,22 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<String> getPostoIdLiveData() {
         return postoIdLiveData;
+    }
+
+    public LiveData<Double> getLatitude() {
+        return latitude;
+    }
+
+    public LiveData<Double> getLongitude() {
+        return longitude;
+    }
+
+    public LiveData<Boolean> getIsOnline() {
+        return networkMonitor.isOnline();
+    }
+
+    public LiveData<Integer> getPendentesCount() {
+        return checkinRepository.getPendentesCount();
     }
 
     public Turno getTurnoAtual() {
@@ -150,7 +201,6 @@ public class HomeViewModel extends ViewModel {
                 postoNome.postValue(null);
                 statusTurno.postValue(null);
                 postoIdLiveData.postValue(null);
-                pararTimer();
             }
             result.removeObserver(holder[0]);
         };
@@ -158,59 +208,17 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void atualizarTurnoAposCheckin(Turno turno, long novoUltimoCheckin) {
-        this.turnoAtual = turno;
-        turnoAtivo.postValue(true);
-        postoNome.postValue(turno.getPostoNome());
-        statusTurno.postValue(turno.getStatus());
-        postoIdLiveData.postValue(turno.getPostoId());
+        aplicarTurnoAtivo(turno);
         turnoRepository.atualizarUltimoCheckin(novoUltimoCheckin);
-        iniciarTimer();
-    }
-
-    private void iniciarTimer() {
-        pararTimer();
-
-        timerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (turnoAtual == null) {
-                    return;
-                }
-
-                long restante = turnoAtual.getTempoRestanteMillis();
-                tempoRestante.postValue(formatarTempo(restante));
-
-                if (restante > 0) {
-                    timerHandler.postDelayed(this, 1000);
-                }
-            }
-        };
-
-        timerHandler.post(timerRunnable);
-    }
-
-    private void pararTimer() {
-        if (timerRunnable != null) {
-            timerHandler.removeCallbacks(timerRunnable);
-        }
-    }
-
-    private String formatarTempo(long millis) {
-        long totalSegundos = millis / 1000;
-        long horas = totalSegundos / 3600;
-        long minutos = (totalSegundos % 3600) / 60;
-        long segundos = totalSegundos % 60;
-
-        if (horas > 0) {
-            return String.format("%02d:%02d:%02d", horas, minutos, segundos);
-        }
-        return String.format("%02d:%02d", minutos, segundos);
+        serviceStateManager.setUltimoCheckinMillis(novoUltimoCheckin);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        pararTimer();
+        serviceStateManager.getTempoRestante().removeObserver(onTempoRestante);
+        serviceStateManager.getCurrentLatitude().removeObserver(onLatitude);
+        serviceStateManager.getCurrentLongitude().removeObserver(onLongitude);
         if (turnoAtivoObservable != null) {
             turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
         }

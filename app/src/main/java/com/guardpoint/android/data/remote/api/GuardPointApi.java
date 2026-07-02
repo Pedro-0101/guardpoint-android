@@ -12,7 +12,7 @@ import com.guardpoint.android.data.remote.dto.SabotagemRequest;
 import com.guardpoint.android.data.remote.dto.TurnoIniciarRequest;
 import com.guardpoint.android.data.remote.dto.TurnoResponse;
 
-import java.util.List;
+import com.guardpoint.android.data.remote.dto.LoteCheckinRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -48,5 +48,5 @@ public interface GuardPointApi {
     Call<GenericResponse> sabotagem(@Body SabotagemRequest request);
 
     @POST("checkins/lote")
-    Call<GenericResponse> enviarLote(@Body List<CheckinRequest> checkins);
+    Call<GenericResponse> enviarLote(@Body LoteCheckinRequest checkins);
 }

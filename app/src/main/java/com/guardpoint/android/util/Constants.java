@@ -24,4 +24,15 @@ public final class Constants {
     public static final int LOCATION_FASTEST_INTERVAL_MS = 15000;
 
     public static final String WORK_TAG_SYNC = "sync";
+
+    public static final int MAX_RETRY_SYNC = 5;
+
+    public static final String ACTION_CHECKIN_ALARM = "com.guardpoint.android.ACTION_CHECKIN_ALARM";
+    public static final String EXTRA_TURNO_ID = "extra_turno_id";
+    public static final String EXTRA_POSTO_NOME = "extra_posto_nome";
+    public static final String EXTRA_INTERVALO_MINUTOS = "extra_intervalo_minutos";
+    public static final String EXTRA_ULTIMO_CHECKIN = "extra_ultimo_checkin";
+
+    public static final int ALARM_THRESHOLD_MINUTES = 5;
+    public static final int ALARM_REQUEST_CODE = 3001;
 }

@@ -12,4 +12,6 @@ public interface CheckinRepository {
 
     void salvarCheckinPendente(String turnoId, String senha, String tipoSenha,
                                double latitude, double longitude);
+
+    LiveData<Integer> getPendentesCount();
 }

@@ -38,4 +38,25 @@
     <string name="checkin_biometric_title">Biometric Authentication</string>
     <string name="checkin_biometric_subtitle">Confirm your identity before checking in</string>
     <string name="checkin_no_authenticator">Device has no authentication configured. Please set up a PIN, password, or biometric in device settings to perform check-in.</string>
+
+    <string name="notification_channel_service">GuardPoint Service</string>
+    <string name="notification_channel_service_desc">Persistent notification while your shift is active</string>
+    <string name="notification_channel_alerts">GuardPoint Alerts</string>
+    <string name="notification_channel_alerts_desc">Alerts for check-ins and urgent notifications</string>
+    <string name="notification_service_active">GuardPoint active — Time remaining: %1$s</string>
+    <string name="notification_checkin_alert_title">Check-in Required</string>
+    <string name="notification_checkin_alert_message">Your check-in window is closing soon. Head to your post.</string>
+    <string name="home_offline_status">Offline — check-ins saved locally</string>
+    <string name="home_online_status">Online</string>
+    <string name="home_pending_sync" formatted="true">%d check-in(s) pending sync</string>
+
+    <string name="notification_no_network_title">No Network</string>
+    <string name="notification_no_network_message">Move to an area with signal to perform your check-in.</string>
+    <string name="notification_deadline_passed_title">Check-in Overdue</string>
+    <string name="notification_deadline_passed_message">The check-in deadline has passed. Perform your check-in immediately.</string>
+
+    <string name="home_alarm_permission_title">Alarm Permission Recommended</string>
+    <string name="home_alarm_permission_message">GuardPoint needs permission to schedule exact alarms so you receive check-in reminders precisely on time. Without it, reminders may be delayed.\n\nGrant this permission?</string>
+    <string name="home_alarm_permission_positive">Open Settings</string>
+    <string name="home_alarm_permission_negative">Not now</string>
 </resources>
