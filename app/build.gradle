@@ -65,6 +65,9 @@ dependencies {
     // Security (EncryptedSharedPreferences)
     implementation 'androidx.security:security-crypto:1.1.0-alpha06'
 
+    // Biometric (device PIN / fingerprint)
+    implementation 'androidx.biometric:biometric:1.1.0'
+
     // Logging
     implementation 'com.jakewharton.timber:timber:5.0.1'
 

@@ -6,7 +6,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
@@ -15,7 +20,11 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.guardpoint.android.R;
+import com.guardpoint.android.data.remote.dto.LoginResponse;
+import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.ui.home.HomeActivity;
+
+import java.util.concurrent.Executor;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -41,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isVigiaMode = false;
 
+    private BiometricPrompt biometricPrompt;
+    private BiometricPrompt.PromptInfo promptInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         bindViews();
         setupModeToggle();
         setupTextWatchers();
+        setupBiometricPrompt();
 
         btnLogin.setOnClickListener(v -> onLoginClicked());
         checkExistingSession();
@@ -117,9 +130,49 @@ public class LoginActivity extends AppCompatActivity {
         etSenha.addTextChangedListener(textWatcher);
     }
 
+    private void setupBiometricPrompt() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+
+        biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                if (viewModel.hasValidSession()) {
+                    navigateToHome();
+                }
+            }
+
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.biometric_prompt_title))
+                .setSubtitle(getString(R.string.biometric_prompt_subtitle))
+                .setAllowedAuthenticators(
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK |
+                        BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                .build();
+    }
+
     private void checkExistingSession() {
-        if (viewModel.hasValidSession()) {
-            navigateToHome();
+        if (viewModel.isBiometricEnabled()) {
+            BiometricManager biometricManager = BiometricManager.from(this);
+            int canAuth = biometricManager.canAuthenticate(
+                    BiometricManager.Authenticators.BIOMETRIC_WEAK |
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL);
+
+            if (canAuth == BiometricManager.BIOMETRIC_SUCCESS) {
+                biometricPrompt.authenticate(promptInfo);
+                return;
+            }
         }
     }
 
@@ -160,14 +213,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void handleLoginResult(com.guardpoint.android.domain.model.Resource<com.guardpoint.android.data.remote.dto.LoginResponse> resource) {
+    private void handleLoginResult(Resource<LoginResponse> resource) {
         switch (resource.getStatus()) {
             case LOADING:
                 setLoading(true);
                 break;
             case SUCCESS:
                 setLoading(false);
-                navigateToHome();
+                if (!viewModel.isBiometricEnabled() && isBiometricAvailable()) {
+                    showBiometricEnrollmentDialog();
+                } else {
+                    navigateToHome();
+                }
                 break;
             case ERROR:
                 setLoading(false);
@@ -177,10 +234,34 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isBiometricAvailable() {
+        BiometricManager manager = BiometricManager.from(this);
+        int result = manager.canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_WEAK |
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL);
+        return result == BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private void showBiometricEnrollmentDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.biometric_enable_title)
+                .setMessage(R.string.biometric_enable_message)
+                .setPositiveButton(R.string.biometric_enable_positive, (dialog, which) -> {
+                    viewModel.setBiometricEnabled(true);
+                    navigateToHome();
+                })
+                .setNegativeButton(R.string.biometric_enable_negative, (dialog, which) -> {
+                    navigateToHome();
+                })
+                .setCancelable(false)
+                .show();
+    }
+
     private void navigateToHome() {
         Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
         finish();
     }
 

@@ -2,19 +2,49 @@
 <resources>
     <string name="app_name">GuardPoint</string>
 
-    <string name="login_title">Sign in to GuardPoint</string>
-    <string name="login_email_hint">Email</string>
-    <string name="login_password_hint">Password</string>
-    <string name="login_button">Sign In</string>
-    <string name="login_error_empty_fields">Please fill in email and password</string>
-    <string name="login_error_empty_fields_vigia">Please fill in company code, name and password</string>
-    <string name="login_error_invalid_email">Invalid email</string>
-
+    <!-- Login -->
+    <string name="login_title">Entrar no GuardPoint</string>
+    <string name="login_email_hint">E-mail</string>
+    <string name="login_password_hint">Senha</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_error_empty_fields">Preencha e-mail e senha</string>
+    <string name="login_error_empty_fields_vigia">Preencha código da empresa, nome e senha</string>
+    <string name="login_error_invalid_email">E-mail inválido</string>
     <string name="login_tab_admin">Admin/Supervisor</string>
-    <string name="login_tab_vigia">Guard</string>
-    <string name="login_company_hint">Company Code</string>
-    <string name="login_name_hint">Name</string>
+    <string name="login_tab_vigia">Vigia</string>
+    <string name="login_company_hint">Código da Empresa</string>
+    <string name="login_name_hint">Nome</string>
 
+    <!-- Home -->
     <string name="home_loading">Carregando posto…</string>
     <string name="home_offline_status">Offline</string>
+    <string name="home_turno_em_andamento">Turno em Andamento</string>
+    <string name="home_proximo_turno">Próximo Turno</string>
+    <string name="home_tempo_restante">Tempo restante para o Check-in</string>
+
+    <!-- Biometric -->
+    <string name="biometric_prompt_title">GuardPoint</string>
+    <string name="biometric_prompt_subtitle">Verifique sua identidade para continuar</string>
+    <string name="biometric_enable_title">Usar biometria?</string>
+    <string name="biometric_enable_message">Use sua digital ou PIN do dispositivo para entrar mais rápido.</string>
+    <string name="biometric_enable_positive">Ativar</string>
+    <string name="biometric_enable_negative">Agora não</string>
+
+    <!-- Generic -->
+    <string name="generic_loading">Carregando…</string>
+    <string name="generic_error">Ocorreu um erro</string>
+    <string name="generic_empty">Nenhum registro encontrado</string>
+    <string name="generic_retry">Tentar novamente</string>
+    <string name="generic_save">Salvar</string>
+    <string name="generic_cancel">Cancelar</string>
+    <string name="generic_confirm">Confirmar</string>
+    <string name="generic_back">Voltar</string>
+
+    <!-- Sidebar / Navigation -->
+    <string name="nav_home">Início</string>
+    <string name="nav_turnos">Turnos</string>
+    <string name="nav_checkin">Check-in</string>
+    <string name="nav_alertas">Alertas</string>
+    <string name="nav_configuracoes">Configurações</string>
+    <string name="nav_sair">Sair</string>
 </resources>

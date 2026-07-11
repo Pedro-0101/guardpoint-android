@@ -79,7 +79,22 @@ public class SecurePrefs {
         return prefs.getString(Constants.KEY_USER_ROLE, "Vigia");
     }
 
+    public void setBiometricEnabled(boolean enabled) {
+        prefs.edit().putBoolean(Constants.KEY_BIOMETRIC_ENABLED, enabled).apply();
+    }
+
+    public boolean isBiometricEnabled() {
+        return prefs.getBoolean(Constants.KEY_BIOMETRIC_ENABLED, false);
+    }
+
     public void clear() {
-        prefs.edit().clear().apply();
+        prefs.edit()
+                .remove(Constants.KEY_JWT_TOKEN)
+                .remove(Constants.KEY_REFRESH_TOKEN)
+                .remove(Constants.KEY_USER_ID)
+                .remove(Constants.KEY_COMPANY_ID)
+                .remove(Constants.KEY_USER_NOME)
+                .remove(Constants.KEY_USER_ROLE)
+                .apply();
     }
 }

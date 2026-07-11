@@ -3,6 +3,7 @@ package com.guardpoint.android.ui.login;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.guardpoint.android.data.local.prefs.SecurePrefs;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.repository.AuthRepository;
@@ -15,10 +16,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class LoginViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
+    private final SecurePrefs securePrefs;
 
     @Inject
-    public LoginViewModel(AuthRepository authRepository) {
+    public LoginViewModel(AuthRepository authRepository, SecurePrefs securePrefs) {
         this.authRepository = authRepository;
+        this.securePrefs = securePrefs;
     }
 
     public LiveData<Resource<LoginResponse>> login(String email, String senha) {
@@ -35,5 +38,13 @@ public class LoginViewModel extends ViewModel {
 
     public void logout() {
         authRepository.logout();
+    }
+
+    public boolean isBiometricEnabled() {
+        return securePrefs.isBiometricEnabled();
+    }
+
+    public void setBiometricEnabled(boolean enabled) {
+        securePrefs.setBiometricEnabled(enabled);
     }
 }
