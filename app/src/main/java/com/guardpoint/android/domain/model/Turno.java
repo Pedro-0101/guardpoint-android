@@ -9,9 +9,11 @@ public class Turno {
     private final String tokenSessao;
     private final String status;
     private final long ultimoCheckinMillis;
+    private final long inicioPrevistoMillis;
 
     public Turno(String turnoId, String postoId, String postoNome, int intervaloMinutos,
-                 String tokenSessao, String status, long ultimoCheckinMillis) {
+                 String tokenSessao, String status, long ultimoCheckinMillis,
+                 long inicioPrevistoMillis) {
         this.turnoId = turnoId;
         this.postoId = postoId;
         this.postoNome = postoNome;
@@ -19,6 +21,7 @@ public class Turno {
         this.tokenSessao = tokenSessao;
         this.status = status;
         this.ultimoCheckinMillis = ultimoCheckinMillis;
+        this.inicioPrevistoMillis = inicioPrevistoMillis;
     }
 
     public String getTurnoId() { return turnoId; }
@@ -28,6 +31,7 @@ public class Turno {
     public String getTokenSessao() { return tokenSessao; }
     public String getStatus() { return status; }
     public long getUltimoCheckinMillis() { return ultimoCheckinMillis; }
+    public long getInicioPrevistoMillis() { return inicioPrevistoMillis; }
 
     public long getDeadlineMillis() {
         return ultimoCheckinMillis + (intervaloMinutos * 60L * 1000L);

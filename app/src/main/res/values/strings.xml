@@ -18,9 +18,12 @@
     <!-- Home -->
     <string name="home_loading">Carregando posto…</string>
     <string name="home_offline_status">Offline</string>
+    <string name="home_turno_agendado">Próximo Turno</string>
     <string name="home_turno_em_andamento">Turno em Andamento</string>
-    <string name="home_proximo_turno">Próximo Turno</string>
+    <string name="home_turno_atrasado">Turno Atrasado</string>
     <string name="home_tempo_restante">Tempo restante para o Check-in</string>
+    <string name="home_label_inicio">Início</string>
+    <string name="home_sem_turno">Nenhum turno agendado</string>
 
     <!-- Biometric -->
     <string name="biometric_prompt_title">GuardPoint</string>
@@ -39,6 +42,17 @@
     <string name="generic_cancel">Cancelar</string>
     <string name="generic_confirm">Confirmar</string>
     <string name="generic_back">Voltar</string>
+
+    <!-- Senha Vigia Card -->
+    <string name="senha_vigia_hint">Senha do vigia</string>
+    <string name="senha_vigia_enviar">Enviar</string>
+    <string name="senha_vigia_erro_vazio">Digite a senha do vigia</string>
+    <string name="senha_vigia_sucesso">Enviado com sucesso!</string>
+
+    <!-- Ações de turno -->
+    <string name="acao_iniciar_turno">Iniciar turno</string>
+    <string name="acao_enviar_checkin">Enviar check-in</string>
+    <string name="acao_finalizar_turno">Finalizar turno</string>
 
     <!-- Sidebar / Navigation -->
     <string name="nav_home">Início</string>

@@ -22,6 +22,9 @@ public class TurnoResponse {
     @SerializedName("status")
     private String status;
 
+    @SerializedName("inicio_previsto")
+    private String inicioPrevisto;
+
     public TurnoResponse() {
     }
 
@@ -31,4 +34,5 @@ public class TurnoResponse {
     public int getIntervaloMinutos() { return intervaloMinutos; }
     public String getTokenSessao() { return tokenSessao; }
     public String getStatus() { return status; }
+    public String getInicioPrevisto() { return inicioPrevisto; }
 }
