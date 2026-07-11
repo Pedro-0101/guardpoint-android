@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.guardpoint.android.R;
+import com.guardpoint.android.util.ThemeManager;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -77,5 +78,11 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.getIsOnline().observe(this, online -> {
             tvOfflineIndicator.setVisibility(Boolean.TRUE.equals(online) ? View.GONE : View.VISIBLE);
         });
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_left);
     }
 }

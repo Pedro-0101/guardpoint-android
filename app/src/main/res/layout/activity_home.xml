@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="@color/background">
 
     <LinearLayout
         android:id="@+id/headerLayout"
@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="24dp"
-        android:background="?attr/colorPrimaryContainer"
+        android:background="?attr/colorSurfaceVariant"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -20,16 +20,16 @@
             android:layout_height="wrap_content"
             android:text="Olá, Vigia"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnPrimaryContainer" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/tvRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="Vigia Operacional"
             android:textAppearance="?attr/textAppearanceLabelMedium"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:alpha="0.8" />
+            android:textColor="?attr/colorOnSurfaceVariant" />
     </LinearLayout>
 
     <TextView
@@ -40,10 +40,10 @@
         android:layout_marginEnd="16dp"
         android:paddingHorizontal="12dp"
         android:paddingVertical="4dp"
+        android:background="@drawable/bg_offline_indicator"
         android:text="@string/home_offline_status"
         android:textAppearance="?attr/textAppearanceLabelSmall"
-        android:textColor="@android:color/white"
-        android:background="@drawable/bg_offline_indicator"
+        android:textColor="@color/on_error_container"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/headerLayout"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -53,8 +53,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="16dp"
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:strokeColor="@color/outline_variant"
+        app:strokeWidth="1dp"
         app:layout_constraintTop_toBottomOf="@id/tvOfflineIndicator"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -71,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:text="PRÓXIMO TURNO"
                 android:textAppearance="?attr/textAppearanceLabelLarge"
-                android:textColor="?attr/colorPrimary" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/tvPostoNome"
@@ -80,7 +82,8 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/home_loading"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
 
             <View
                 android:layout_width="match_parent"
@@ -95,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:text="Tempo restante para o Check-in"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
-                android:textColor="?attr/colorOutline" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/tvTimer"
@@ -104,7 +107,7 @@
                 android:layout_marginTop="4dp"
                 android:text="--:--"
                 android:gravity="center"
-                android:textAppearance="?attr/textAppearanceHeadlineLarge"
+                android:textAppearance="?attr/textAppearanceHeadlineMedium"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold" />
 

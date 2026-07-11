@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Material Design 3 — Dark Palette -->
+    <color name="primary">#E8E8EE</color>
+    <color name="on_primary">#1A1A2E</color>
+    <color name="primary_container">#2A2A3E</color>
+    <color name="on_primary_container">#E8E8EE</color>
+
+    <color name="secondary">#3A3A4E</color>
+    <color name="on_secondary">#E8E8EE</color>
+    <color name="secondary_container">#2A2A3E</color>
+    <color name="on_secondary_container">#D4D4D8</color>
+
+    <color name="tertiary">#3A3A4E</color>
+    <color name="on_tertiary">#E8E8EE</color>
+
+    <color name="background">#121212</color>
+    <color name="on_background">#E8E8EE</color>
+
+    <color name="surface">#1E1E2E</color>
+    <color name="on_surface">#E8E8EE</color>
+    <color name="surface_variant">#2A2A3E</color>
+    <color name="on_surface_variant">#9CA3AF</color>
+
+    <color name="outline">#3A3A4E</color>
+    <color name="outline_variant">#2E2E42</color>
+
+    <color name="error">#EF5350</color>
+    <color name="on_error">#1A1A2E</color>
+    <color name="error_container">#4A1C1C</color>
+    <color name="on_error_container">#FCA5A5</color>
+
+    <color name="inverse_surface">#F0F0F5</color>
+
+    <!-- Semantic Status Colors (Dark) -->
+    <color name="success">#4ADE80</color>
+    <color name="on_success">#1A1A2E</color>
+    <color name="success_container">#14532D</color>
+
+    <color name="warning">#FBBF24</color>
+    <color name="on_warning">#1A1A2E</color>
+    <color name="warning_container">#451A03</color>
+
+    <color name="info">#60A5FA</color>
+    <color name="on_info">#1A1A2E</color>
+    <color name="info_container">#1E3A5F</color>
+
+    <!-- Critical / Coercao (Dark) -->
+    <color name="critical">#EF5350</color>
+    <color name="critical_container">#4A1C1C</color>
+    <color name="on_critical">#FFFFFF</color>
+
+    <!-- Sidebar (Dark) -->
+    <color name="sidebar_background">#1E1E2E</color>
+    <color name="sidebar_foreground">#E8E8EE</color>
+    <color name="sidebar_item_active">#2A2A3E</color>
+    <color name="sidebar_item_hover">#333348</color>
+    <color name="sidebar_icon_active">#E8E8EE</color>
+    <color name="sidebar_icon_inactive">#6B7280</color>
+    <color name="sidebar_border">#2E2E42</color>
+    <color name="sidebar_footer_bg">#1A1A2E</color>
+
+    <!-- Base neutrals -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+</resources>

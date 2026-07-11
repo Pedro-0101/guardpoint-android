@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Border Radius Tokens -->
+    <dimen name="radius_none">0dp</dimen>
+    <dimen name="radius_sm">4dp</dimen>
+    <dimen name="radius_md">6dp</dimen>
+    <dimen name="radius_lg">8dp</dimen>
+    <dimen name="radius_xl">12dp</dimen>
+    <dimen name="radius_full">9999dp</dimen>
+
+    <!-- Elevation Tokens -->
+    <dimen name="elevation_none">0dp</dimen>
+    <dimen name="elevation_sm">1dp</dimen>
+    <dimen name="elevation_md">4dp</dimen>
+    <dimen name="elevation_lg">8dp</dimen>
+
+    <!-- Spacing Tokens -->
+    <dimen name="space_1">4dp</dimen>
+    <dimen name="space_2">8dp</dimen>
+    <dimen name="space_3">12dp</dimen>
+    <dimen name="space_4">16dp</dimen>
+    <dimen name="space_5">20dp</dimen>
+    <dimen name="space_6">24dp</dimen>
+    <dimen name="space_8">32dp</dimen>
+    <dimen name="space_10">40dp</dimen>
+    <dimen name="space_12">48dp</dimen>
+
+    <!-- Layout Dimensions -->
+    <dimen name="sidebar_width">260dp</dimen>
+    <dimen name="sidebar_collapsed_width">64dp</dimen>
+    <dimen name="header_height">64dp</dimen>
+    <dimen name="page_margin">24dp</dimen>
+    <dimen name="page_margin_mobile">16dp</dimen>
+
+    <!-- Button Dimensions -->
+    <dimen name="button_height_sm">32dp</dimen>
+    <dimen name="button_height_default">40dp</dimen>
+    <dimen name="button_height_lg">48dp</dimen>
+    <dimen name="button_min_width">64dp</dimen>
+    <dimen name="button_icon_size">36dp</dimen>
+
+    <!-- Card Dimensions -->
+    <dimen name="card_padding">24dp</dimen>
+    <dimen name="card_padding_compact">16dp</dimen>
+    <dimen name="card_corner_radius">@dimen/radius_lg</dimen>
+    <dimen name="card_elevation">@dimen/elevation_sm</dimen>
+    <dimen name="card_icon_container_size">56dp</dimen>
+
+    <!-- Input Dimensions -->
+    <dimen name="input_corner_radius">@dimen/radius_sm</dimen>
+
+    <!-- Badge Dimensions -->
+    <dimen name="badge_padding_horizontal">8dp</dimen>
+    <dimen name="badge_padding_vertical">4dp</dimen>
+    <dimen name="badge_corner_radius">@dimen/radius_sm</dimen>
+
+    <!-- KPI / Dashboard -->
+    <dimen name="kpi_card_padding">24dp</dimen>
+    <dimen name="kpi_value_size">28sp</dimen>
+    <dimen name="kpi_label_size">13sp</dimen>
+
+    <!-- Table -->
+    <dimen name="table_cell_padding_default_h">16dp</dimen>
+    <dimen name="table_cell_padding_default_v">8dp</dimen>
+    <dimen name="table_cell_padding_compact_h">8dp</dimen>
+    <dimen name="table_cell_padding_compact_v">4dp</dimen>
+
+    <!-- Icon Sizes -->
+    <dimen name="icon_size_sm">16dp</dimen>
+    <dimen name="icon_size_md">20dp</dimen>
+    <dimen name="icon_size_lg">24dp</dimen>
+    <dimen name="icon_avatar_size">40dp</dimen>
+
+</resources>
