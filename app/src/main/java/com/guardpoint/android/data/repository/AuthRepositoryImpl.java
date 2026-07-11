@@ -35,10 +35,18 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     @Override
     public LiveData<Resource<LoginResponse>> login(String email, String senha) {
+        return executeLogin(new LoginRequest(email, senha));
+    }
+
+    @Override
+    public LiveData<Resource<LoginResponse>> loginVigia(String codigoEmpresa, String nome, String senha) {
+        return executeLogin(new LoginRequest(codigoEmpresa, nome, senha));
+    }
+
+    private LiveData<Resource<LoginResponse>> executeLogin(LoginRequest request) {
         MutableLiveData<Resource<LoginResponse>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
-        LoginRequest request = new LoginRequest(email, senha);
         api.login(request).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {

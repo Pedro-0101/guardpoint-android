@@ -9,6 +9,8 @@ public interface AuthRepository {
 
     LiveData<Resource<LoginResponse>> login(String email, String senha);
 
+    LiveData<Resource<LoginResponse>> loginVigia(String codigoEmpresa, String nome, String senha);
+
     boolean hasValidSession();
 
     void logout();

@@ -25,6 +25,10 @@ public class LoginViewModel extends ViewModel {
         return authRepository.login(email, senha);
     }
 
+    public LiveData<Resource<LoginResponse>> loginVigia(String codigoEmpresa, String nome, String senha) {
+        return authRepository.loginVigia(codigoEmpresa, nome, senha);
+    }
+
     public boolean hasValidSession() {
         return authRepository.hasValidSession();
     }
