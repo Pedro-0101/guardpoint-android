@@ -4,6 +4,8 @@ import com.guardpoint.android.data.remote.api.AuthInterceptor;
 import com.guardpoint.android.data.remote.api.GuardPointApi;
 import com.guardpoint.android.util.Constants;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -21,26 +23,25 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public OkHttpClient provideOkHttpClient(
-            AuthInterceptor authInterceptor,
-            AuthInterceptor.TokenAuthenticator tokenAuthenticator) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.addInterceptor(authInterceptor);
-        builder.authenticator(tokenAuthenticator);
+    public OkHttpClient provideOkHttpClient(AuthInterceptor authInterceptor) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        builder.addInterceptor(loggingInterceptor);
-
-        return builder.build();
+        return new OkHttpClient.Builder()
+                .addInterceptor(authInterceptor)
+                .addInterceptor(logging)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
     }
 
     @Provides
     @Singleton
-    public Retrofit provideRetrofit(OkHttpClient okHttpClient) {
+    public Retrofit provideRetrofit(OkHttpClient client) {
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
-                .client(okHttpClient)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

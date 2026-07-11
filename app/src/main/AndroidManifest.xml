@@ -1,34 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-
-    <!-- SCHEDULE_EXACT_ALARM: app de segurança de vida (life-safety).
-         Preferida à USE_EXACT_ALARM pois é revogável pelo usuário e não requer
-         justificativa especial na Play Store, ao contrário de USE_EXACT_ALARM.
-         Em API < 31, o sistema ignora esta declaração sem erro. -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:name=".GuardPointApp"
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GuardPoint"
-        tools:targetApi="34">
+        android:theme="@style/Theme.GuardPoint">
 
         <activity
             android:name=".ui.login.LoginActivity"
@@ -43,50 +27,7 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false"
-            android:theme="@style/Theme.GuardPoint"
-            android:configChanges="orientation|screenSize" />
-
-        <activity
-            android:name=".ui.checkin.CheckinActivity"
-            android:exported="false"
             android:theme="@style/Theme.GuardPoint" />
-
-        <activity
-            android:name=".ui.alerta.BloqueioActivity"
-            android:exported="false"
-            android:theme="@style/Theme.GuardPoint.Bloqueio"
-            android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true" />
-
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.WorkManagerInitializer"
-                android:value="androidx.startup"
-                tools:node="remove" />
-        </provider>
-
-        <service
-            android:name=".service.GuardPointForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="location" />
-
-        <receiver
-            android:name=".service.CheckinAlarmReceiver"
-            android:exported="false" />
-
-        <receiver
-            android:name=".receiver.BootReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

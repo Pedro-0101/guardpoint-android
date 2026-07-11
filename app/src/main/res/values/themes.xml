@@ -17,11 +17,4 @@
         <item name="android:navigationBarColor">@color/surface</item>
     </style>
 
-    <style name="Theme.GuardPoint.Bloqueio" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:statusBarColor">@color/critical</item>
-        <item name="android:navigationBarColor">@color/critical</item>
-        <item name="android:windowBackground">@color/critical</item>
-    </style>
 </resources>

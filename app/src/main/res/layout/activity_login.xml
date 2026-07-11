@@ -121,20 +121,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <ImageView
-                    android:id="@+id/ivBiometric"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="16dp"
-                    android:src="@android:drawable/ic_lock_idle_lock"
-                    android:contentDescription="@string/login_biometric_hint"
-                    android:visibility="gone"
-                    android:padding="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintTop_toBottomOf="@id/tvError"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>

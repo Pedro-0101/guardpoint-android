@@ -21,33 +21,13 @@ public class Turno {
         this.ultimoCheckinMillis = ultimoCheckinMillis;
     }
 
-    public String getTurnoId() {
-        return turnoId;
-    }
-
-    public String getPostoId() {
-        return postoId;
-    }
-
-    public String getPostoNome() {
-        return postoNome;
-    }
-
-    public int getIntervaloMinutos() {
-        return intervaloMinutos;
-    }
-
-    public String getTokenSessao() {
-        return tokenSessao;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public long getUltimoCheckinMillis() {
-        return ultimoCheckinMillis;
-    }
+    public String getTurnoId() { return turnoId; }
+    public String getPostoId() { return postoId; }
+    public String getPostoNome() { return postoNome; }
+    public int getIntervaloMinutos() { return intervaloMinutos; }
+    public String getTokenSessao() { return tokenSessao; }
+    public String getStatus() { return status; }
+    public long getUltimoCheckinMillis() { return ultimoCheckinMillis; }
 
     public long getDeadlineMillis() {
         return ultimoCheckinMillis + (intervaloMinutos * 60L * 1000L);

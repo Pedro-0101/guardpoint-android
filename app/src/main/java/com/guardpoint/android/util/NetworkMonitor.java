@@ -6,79 +6,41 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import dagger.hilt.android.qualifiers.ApplicationContext;
-
-@Singleton
 public class NetworkMonitor {
 
     private final ConnectivityManager connectivityManager;
-    private final MutableLiveData<Boolean> isOnline = new MutableLiveData<>();
-    private final ConnectivityManager.NetworkCallback networkCallback;
+    private final MutableLiveData<Boolean> isOnline = new MutableLiveData<>(true);
 
-    @Inject
-    public NetworkMonitor(@ApplicationContext Context context) {
+    public NetworkMonitor(Context context) {
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        this.networkCallback = new ConnectivityManager.NetworkCallback() {
+
+        NetworkRequest request = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build();
+
+        connectivityManager.registerNetworkCallback(request, new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onAvailable(Network network) {
+            public void onAvailable(@NonNull Network network) {
                 isOnline.postValue(true);
             }
 
             @Override
-            public void onLost(Network network) {
+            public void onLost(@NonNull Network network) {
                 isOnline.postValue(false);
             }
 
             @Override
-            public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
-                boolean hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-                isOnline.postValue(hasInternet);
+            public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities capabilities) {
+                isOnline.postValue(capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET));
             }
-        };
-
-        checkInitialState();
-    }
-
-    private void checkInitialState() {
-        Network network = connectivityManager.getActiveNetwork();
-        if (network != null) {
-            NetworkCapabilities caps = connectivityManager.getNetworkCapabilities(network);
-            if (caps != null) {
-                isOnline.setValue(caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET));
-            } else {
-                isOnline.setValue(false);
-            }
-        } else {
-            isOnline.setValue(false);
-        }
-    }
-
-    public void startMonitoring() {
-        NetworkRequest request = new NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .build();
-        connectivityManager.registerNetworkCallback(request, networkCallback);
-    }
-
-    public void stopMonitoring() {
-        try {
-            connectivityManager.unregisterNetworkCallback(networkCallback);
-        } catch (IllegalArgumentException ignored) {
-        }
+        });
     }
 
     public LiveData<Boolean> isOnline() {
         return isOnline;
-    }
-
-    public boolean isCurrentlyOnline() {
-        Boolean value = isOnline.getValue();
-        return value != null && value;
     }
 }

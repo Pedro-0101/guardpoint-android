@@ -1,6 +1,5 @@
 package com.guardpoint.android.ui.login;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -26,20 +25,8 @@ public class LoginViewModel extends ViewModel {
         return authRepository.login(email, senha);
     }
 
-    public LiveData<Resource<Void>> registerBiometric() {
-        return authRepository.registerBiometric();
-    }
-
-    public LiveData<Resource<LoginResponse>> authenticateWithBiometric() {
-        return authRepository.authenticateWithBiometric();
-    }
-
     public boolean hasValidSession() {
         return authRepository.hasValidSession();
-    }
-
-    public boolean isBiometricEnabled() {
-        return authRepository.isBiometricEnabled();
     }
 
     public void logout() {

@@ -25,51 +25,10 @@ public class TurnoResponse {
     public TurnoResponse() {
     }
 
-    public String getTurnoId() {
-        return turnoId;
-    }
-
-    public void setTurnoId(String turnoId) {
-        this.turnoId = turnoId;
-    }
-
-    public String getPostoId() {
-        return postoId;
-    }
-
-    public void setPostoId(String postoId) {
-        this.postoId = postoId;
-    }
-
-    public String getPostoNome() {
-        return postoNome;
-    }
-
-    public void setPostoNome(String postoNome) {
-        this.postoNome = postoNome;
-    }
-
-    public int getIntervaloMinutos() {
-        return intervaloMinutos;
-    }
-
-    public void setIntervaloMinutos(int intervaloMinutos) {
-        this.intervaloMinutos = intervaloMinutos;
-    }
-
-    public String getTokenSessao() {
-        return tokenSessao;
-    }
-
-    public void setTokenSessao(String tokenSessao) {
-        this.tokenSessao = tokenSessao;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getTurnoId() { return turnoId; }
+    public String getPostoId() { return postoId; }
+    public String getPostoNome() { return postoNome; }
+    public int getIntervaloMinutos() { return intervaloMinutos; }
+    public String getTokenSessao() { return tokenSessao; }
+    public String getStatus() { return status; }
 }

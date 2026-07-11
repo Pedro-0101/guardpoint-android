@@ -6,73 +6,9 @@
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Senha</string>
     <string name="login_button">Entrar</string>
-    <string name="login_biometric_hint">Entrar com biometria</string>
-    <string name="login_biometric_title">Autenticação biométrica</string>
-    <string name="login_biometric_subtitle">Use sua digital ou rosto para entrar</string>
-    <string name="login_biometric_error">Falha na autenticação biométrica</string>
     <string name="login_error_empty_fields">Preencha email e senha</string>
     <string name="login_error_invalid_email">Email inválido</string>
 
-    <string name="home_posto_label">Posto</string>
-    <string name="home_timer_label">Tempo restante</string>
-    <string name="home_start_shift">Iniciar Turno</string>
-    <string name="home_checkin_button">Check-in</string>
-    <string name="home_no_shift">Nenhum turno ativo</string>
-    <string name="home_your_location">Sua localização</string>
-    <string name="home_location_permission_required">Permissão de localização é necessária</string>
-    <string name="home_shift_started">Turno iniciado com sucesso</string>
-    <string name="home_finalize_shift">Finalizar Turno</string>
-    <string name="home_finalize_title">Finalizar Turno</string>
-    <string name="home_finalize_message">Tem certeza que deseja finalizar o turno?</string>
-    <string name="home_finalize_confirm">Finalizar</string>
-    <string name="home_shift_ended">Turno finalizado com sucesso</string>
-
-    <string name="checkin_title">Confirmar Presença</string>
-    <string name="checkin_subtitle">Digite sua senha para confirmar</string>
-    <string name="checkin_password_hint">Senha</string>
-    <string name="checkin_coercion_section">Apenas em emergência</string>
-    <string name="checkin_coercion_hint">Senha de coação</string>
-    <string name="checkin_confirm">Confirmar</string>
-    <string name="checkin_success">Check-in realizado com sucesso</string>
-    <string name="checkin_error_empty">Digite sua senha</string>
-    <string name="checkin_biometric_title">Autenticação biométrica</string>
-    <string name="checkin_biometric_subtitle">Confirme sua identidade antes do check-in</string>
-    <string name="checkin_no_authenticator">Dispositivo sem autenticação configurada. Configure PIN, senha ou biometria nas configurações do aparelho para realizar o check-in.</string>
-
-    <string name="notification_channel_service">Serviço GuardPoint</string>
-    <string name="notification_channel_service_desc">Notificação persistente durante o turno ativo</string>
-    <string name="notification_channel_alerts">Alertas GuardPoint</string>
-    <string name="notification_channel_alerts_desc">Alertas de check-in e notificações urgentes</string>
-    <string name="notification_service_active">GuardPoint ativo — Tempo restante: %1$s</string>
-    <string name="notification_checkin_alert_title">Check-in Necessário</string>
-    <string name="notification_checkin_alert_message">Sua janela de check-in está chegando ao fim. Dirija-se ao seu posto.</string>
-    <string name="home_offline_status">Offline — check-ins salvos localmente</string>
-    <string name="home_online_status">Online</string>
-    <string name="home_pending_sync" formatted="true">%d check-in(s) pendentes de envio</string>
-
-    <string name="notification_no_network_title">Sem Rede</string>
-    <string name="notification_no_network_message">Desloque-se para uma área com sinal para realizar o check-in.</string>
-    <string name="notification_deadline_passed_title">Check-in Atrasado</string>
-    <string name="notification_deadline_passed_message">O prazo do check-in expirou. Realize o check-in imediatamente.</string>
-
-    <string name="home_alarm_permission_title">Permissão de Alarme Recomendada</string>
-    <string name="home_alarm_permission_message">O GuardPoint precisa de permissão para agendar alarmes exatos e assim você receber lembretes de check-in no horário correto. Sem ela, os lembretes podem atrasar.\n\nConceder esta permissão?</string>
-    <string name="home_alarm_permission_positive">Abrir Configurações</string>
-    <string name="home_alarm_permission_negative">Agora não</string>
-
-    <string name="bloqueio_titulo">GPS Desativado</string>
-    <string name="bloqueio_mensagem">GPS desativado. O turno será reportado como violação.</string>
-    <string name="bloqueio_btn_ativar_gps">Ativar GPS</string>
-    <string name="bloqueio_gps_restaurado">GPS restaurado. Retornando ao aplicativo.</string>
-    <string name="bloqueio_gps_icon_desc">Aviso - GPS desativado</string>
-
-    <string name="notification_channel_sabotage">Alertas de Violação de GPS</string>
-    <string name="notification_channel_sabotage_desc">Alertas críticos quando o GPS é desativado durante o turno</string>
-    <string name="notification_sabotage_title">GPS Desativado - Violação Detectada</string>
-    <string name="notification_sabotage_message">O GPS foi desativado durante seu turno. Isso foi reportado como violação.</string>
-
-    <string name="battery_optimization_title">Desativar Otimização de Bateria</string>
-    <string name="battery_optimization_message">O GuardPoint precisa desativar a otimização de bateria para garantir que o rastreamento GPS e os alertas de check-in funcionem de forma confiável durante seu turno.\n\nPermitir desativar a otimização de bateria?</string>
-    <string name="battery_optimization_positive">Permitir</string>
-    <string name="battery_optimization_negative">Agora não</string>
+    <string name="home_loading">Carregando posto…</string>
+    <string name="home_offline_status">Offline</string>
 </resources>

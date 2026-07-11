@@ -9,13 +9,7 @@ public interface AuthRepository {
 
     LiveData<Resource<LoginResponse>> login(String email, String senha);
 
-    LiveData<Resource<Void>> registerBiometric();
-
-    LiveData<Resource<LoginResponse>> authenticateWithBiometric();
-
     boolean hasValidSession();
-
-    boolean isBiometricEnabled();
 
     void logout();
 }
