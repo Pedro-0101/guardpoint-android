@@ -152,14 +152,46 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Password card for starting shift (SCHEDULED_READY state) -->
+    <!-- Action buttons for IN_PROGRESS state -->
+    <LinearLayout
+        android:id="@+id/layoutAcoesTurno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/cardTurno"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCheckin"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/acao_enviar_checkin" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFinalizarTurno"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="@string/acao_finalizar_turno" />
+    </LinearLayout>
+
+    <!-- Password card for all actions (iniciar, checkin, finalizar) -->
     <com.guardpoint.android.ui.comum.SenhaVigiaCardView
         android:id="@+id/senhaVigiaCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/cardTurno"
+        app:layout_constraintTop_toBottomOf="@id/layoutAcoesTurno"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

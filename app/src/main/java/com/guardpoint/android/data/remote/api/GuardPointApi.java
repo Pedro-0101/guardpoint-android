@@ -1,9 +1,13 @@
 package com.guardpoint.android.data.remote.api;
 
+import com.guardpoint.android.data.remote.dto.BiometricLoginRequest;
+import com.guardpoint.android.data.remote.dto.BiometricRegisterRequest;
+import com.guardpoint.android.data.remote.dto.BiometricRegisterResponse;
 import com.guardpoint.android.data.remote.dto.CheckinRequest;
 import com.guardpoint.android.data.remote.dto.CheckinResponse;
 import com.guardpoint.android.data.remote.dto.FinalizarTurnoRequest;
 import com.guardpoint.android.data.remote.dto.GenericResponse;
+import com.guardpoint.android.data.remote.dto.IniciarResponse;
 import com.guardpoint.android.data.remote.dto.IniciarTurnoRequest;
 import com.guardpoint.android.data.remote.dto.LoginRequest;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
@@ -27,6 +31,12 @@ public interface GuardPointApi {
     @POST("auth/refresh")
     Call<RefreshResponse> refreshToken(@Body RefreshRequest request);
 
+    @POST("auth/biometric/register")
+    Call<BiometricRegisterResponse> registerBiometric(@Body BiometricRegisterRequest request);
+
+    @POST("auth/biometric/login")
+    Call<LoginResponse> loginBiometric(@Body BiometricLoginRequest request);
+
     @POST("auth/logout")
     Call<GenericResponse> logout();
 
@@ -37,7 +47,7 @@ public interface GuardPointApi {
     Call<TurnoListResponse> getTurnos(@Query("status") String status);
 
     @POST("turnos/iniciar")
-    Call<TurnoResponse> iniciarTurno(@Body IniciarTurnoRequest request);
+    Call<IniciarResponse> iniciarTurno(@Body IniciarTurnoRequest request);
 
     @POST("turnos/checkin")
     Call<CheckinResponse> realizarCheckin(@Body CheckinRequest request);

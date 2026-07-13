@@ -21,6 +21,7 @@ public class SenhaVigiaCardView extends LinearLayout {
     private TextInputLayout inputLayoutSenha;
     private TextInputEditText etSenha;
     private MaterialButton btnEnviar;
+    private String acaoOriginal;
 
     public SenhaVigiaCardView(@NonNull Context context) {
         super(context);
@@ -53,6 +54,7 @@ public class SenhaVigiaCardView extends LinearLayout {
     }
 
     public void setAcao(String acao) {
+        acaoOriginal = acao;
         btnEnviar.setText(acao);
     }
 
@@ -67,6 +69,15 @@ public class SenhaVigiaCardView extends LinearLayout {
                 listener.onClick(v);
             }
         });
+    }
+
+    public void setLoading(boolean loading) {
+        btnEnviar.setEnabled(!loading);
+        if (loading && acaoOriginal != null) {
+            btnEnviar.setText(acaoOriginal + "...");
+        } else if (!loading && acaoOriginal != null) {
+            btnEnviar.setText(acaoOriginal);
+        }
     }
 
     public String getSenha() {

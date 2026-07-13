@@ -2,9 +2,11 @@ package com.guardpoint.android.ui.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -20,6 +22,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.guardpoint.android.R;
+import com.guardpoint.android.data.remote.dto.BiometricRegisterResponse;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.ui.home.HomeActivity;
@@ -27,6 +30,7 @@ import com.guardpoint.android.ui.home.HomeActivity;
 import java.util.concurrent.Executor;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class LoginActivity extends AppCompatActivity {
@@ -46,9 +50,10 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etSenha;
     private MaterialButton btnLogin;
     private View pbLoading;
-    private android.widget.TextView tvError;
+    private TextView tvError;
 
     private boolean isVigiaMode = false;
+    private String deviceId;
 
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
@@ -59,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         bindViews();
         setupModeToggle();
@@ -103,7 +109,6 @@ public class LoginActivity extends AppCompatActivity {
         tilNome.setVisibility(vigiaVisibility);
 
         if (isVigiaMode) {
-            tilEmail.setLayoutParams(tilEmail.getLayoutParams());
             ((androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) tilSenha.getLayoutParams()).topToBottom = R.id.tilNome;
         } else {
             ((androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) tilSenha.getLayoutParams()).topToBottom = R.id.tilEmail;
@@ -137,7 +142,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                if (viewModel.hasValidSession()) {
+                if (viewModel.hasDeviceSecret() && viewModel.hasValidSession()) {
+                    fazerLoginBiometrico();
+                } else if (viewModel.hasValidSession()) {
                     navigateToHome();
                 }
             }
@@ -171,9 +178,32 @@ public class LoginActivity extends AppCompatActivity {
 
             if (canAuth == BiometricManager.BIOMETRIC_SUCCESS) {
                 biometricPrompt.authenticate(promptInfo);
-                return;
             }
         }
+    }
+
+    private void fazerLoginBiometrico() {
+        Timber.i("fazendo login biometrico...");
+        viewModel.loginBiometric(deviceId).observe(this, resource -> {
+            if (resource == null) return;
+            switch (resource.getStatus()) {
+                case LOADING:
+                    setLoading(true);
+                    break;
+                case SUCCESS:
+                    setLoading(false);
+                    Timber.i("Login biometrico OK, navegando para home");
+                    navigateToHome();
+                    break;
+                case ERROR:
+                    setLoading(false);
+                    Timber.e("Login biometrico falhou: %s", resource.getMessage());
+                    tvError.setText(resource.getMessage());
+                    tvError.setVisibility(View.VISIBLE);
+                    viewModel.logout();
+                    break;
+            }
+        });
     }
 
     private void onLoginClicked() {
@@ -220,17 +250,43 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case SUCCESS:
                 setLoading(false);
-                if (!viewModel.isBiometricEnabled() && isBiometricAvailable()) {
-                    showBiometricEnrollmentDialog();
-                } else {
-                    navigateToHome();
-                }
+                registrarDispositivo();
                 break;
             case ERROR:
                 setLoading(false);
                 tvError.setText(resource.getMessage());
                 tvError.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    private void registrarDispositivo() {
+        Timber.i("registrando dispositivo device_id=%s", deviceId);
+        viewModel.registerDevice(deviceId).observe(this, resource -> {
+            if (resource == null) return;
+            switch (resource.getStatus()) {
+                case LOADING:
+                    setLoading(true);
+                    break;
+                case SUCCESS:
+                    setLoading(false);
+                    Timber.i("Dispositivo registrado com sucesso");
+                    aposRegistroDispositivo();
+                    break;
+                case ERROR:
+                    setLoading(false);
+                    Timber.e("Falha ao registrar dispositivo: %s", resource.getMessage());
+                    aposRegistroDispositivo();
+                    break;
+            }
+        });
+    }
+
+    private void aposRegistroDispositivo() {
+        if (!viewModel.isBiometricEnabled() && isBiometricAvailable()) {
+            showBiometricEnrollmentDialog();
+        } else {
+            navigateToHome();
         }
     }
 

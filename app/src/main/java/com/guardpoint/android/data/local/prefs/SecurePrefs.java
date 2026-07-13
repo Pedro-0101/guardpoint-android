@@ -87,6 +87,22 @@ public class SecurePrefs {
         return prefs.getBoolean(Constants.KEY_BIOMETRIC_ENABLED, false);
     }
 
+    public void saveDeviceSecret(String secret) {
+        prefs.edit().putString(Constants.KEY_DEVICE_SECRET, secret).apply();
+    }
+
+    public String getDeviceSecret() {
+        return prefs.getString(Constants.KEY_DEVICE_SECRET, null);
+    }
+
+    public void savePostoNome(String nome) {
+        prefs.edit().putString(Constants.KEY_POSTO_NOME, nome).apply();
+    }
+
+    public String getPostoNome() {
+        return prefs.getString(Constants.KEY_POSTO_NOME, null);
+    }
+
     public void clear() {
         prefs.edit()
                 .remove(Constants.KEY_JWT_TOKEN)
@@ -95,6 +111,7 @@ public class SecurePrefs {
                 .remove(Constants.KEY_COMPANY_ID)
                 .remove(Constants.KEY_USER_NOME)
                 .remove(Constants.KEY_USER_ROLE)
+                .remove(Constants.KEY_DEVICE_SECRET)
                 .apply();
     }
 }

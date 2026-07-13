@@ -11,7 +11,7 @@ public interface TurnoRepository {
     LiveData<Resource<Turno>> getTurnoAtivo();
 
     LiveData<Resource<Turno>> iniciarTurno(String deviceId, String postoId, String senha,
-                                            double latitude, double longitude);
+                                            double latitude, double longitude, int intervaloMinutos);
 
     LiveData<Resource<CheckinResponse>> realizarCheckin(String deviceId, String turnoId, String senha,
                                                         double latitude, double longitude);

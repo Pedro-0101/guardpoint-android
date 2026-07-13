@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.guardpoint.android.data.local.prefs.SecurePrefs;
 import com.guardpoint.android.data.remote.api.GuardPointApi;
+import com.guardpoint.android.data.remote.dto.BiometricLoginRequest;
+import com.guardpoint.android.data.remote.dto.BiometricRegisterRequest;
+import com.guardpoint.android.data.remote.dto.BiometricRegisterResponse;
 import com.guardpoint.android.data.remote.dto.LoginRequest;
 import com.guardpoint.android.data.remote.dto.GenericResponse;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
@@ -20,6 +23,7 @@ import javax.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 @Singleton
 public class AuthRepositoryImpl implements AuthRepository {
@@ -73,6 +77,81 @@ public class AuthRepositoryImpl implements AuthRepository {
         });
 
         return result;
+    }
+
+    @Override
+    public LiveData<Resource<BiometricRegisterResponse>> registerDevice(String deviceId) {
+        MutableLiveData<Resource<BiometricRegisterResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        BiometricRegisterRequest request = new BiometricRegisterRequest(deviceId);
+        api.registerBiometric(request).enqueue(new Callback<BiometricRegisterResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BiometricRegisterResponse> call,
+                                    @NonNull Response<BiometricRegisterResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BiometricRegisterResponse body = response.body();
+                    securePrefs.saveDeviceSecret(body.getDeviceSecret());
+                    Timber.i("Dispositivo registrado: device_id=%s", body.getDeviceId());
+                    result.setValue(Resource.success(body));
+                } else {
+                    String err = parseError(response);
+                    Timber.e("registerDevice erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BiometricRegisterResponse> call, @NonNull Throwable t) {
+                Timber.e(t, "registerDevice onFailure");
+                result.setValue(Resource.error(t.getMessage() != null ? t.getMessage() : "Falha ao registrar dispositivo"));
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Resource<LoginResponse>> loginBiometric(String deviceId, String deviceSecret, String empresaId) {
+        MutableLiveData<Resource<LoginResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        BiometricLoginRequest request = new BiometricLoginRequest(deviceId, deviceSecret, empresaId);
+        api.loginBiometric(request).enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse body = response.body();
+                    securePrefs.saveAccessToken(body.getAccessToken());
+                    securePrefs.saveRefreshToken(body.getRefreshToken());
+                    if (body.getUsuario() != null) {
+                        securePrefs.saveUserId(body.getUsuario().getId());
+                        securePrefs.saveCompanyId(body.getUsuario().getEmpresaId());
+                        securePrefs.saveUserNome(body.getUsuario().getNome());
+                        securePrefs.saveUserRole(body.getUsuario().getRole());
+                    }
+                    Timber.i("Login biometrico OK: usuario=%s", body.getUsuario() != null ? body.getUsuario().getNome() : "?");
+                    result.setValue(Resource.success(body));
+                } else {
+                    String err = parseError(response);
+                    Timber.e("loginBiometric erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
+                Timber.e(t, "loginBiometric onFailure");
+                result.setValue(Resource.error(t.getMessage() != null ? t.getMessage() : "Falha no login biometrico"));
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public boolean hasDeviceSecret() {
+        return securePrefs.getDeviceSecret() != null;
     }
 
     @Override

@@ -15,11 +15,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.guardpoint.android.R;
 import com.guardpoint.android.ui.comum.SenhaVigiaCardView;
-import com.guardpoint.android.util.ThemeManager;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
@@ -31,21 +35,31 @@ public class HomeActivity extends AppCompatActivity {
     private TextView tvPostoNome;
     private TextView tvStatusTurno;
     private TextView tvOfflineIndicator;
+    private TextView tvTimerLabel;
 
     private LinearLayout layoutTimer;
-    private TextView tvTimerLabel;
     private TextView tvTimer;
 
     private LinearLayout layoutInicio;
     private TextView tvInicio;
 
+    private LinearLayout layoutAcoesTurno;
+    private MaterialButton btnCheckin;
+    private MaterialButton btnFinalizarTurno;
+
     private SenhaVigiaCardView senhaVigiaCard;
     private ProgressBar progressBar;
 
     private String deviceId;
+    private FusedLocationProviderClient fusedLocationClient;
 
     private final ActivityResultLauncher<String> requestLocationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Timber.i("Permissao de localizacao concedida");
+                } else {
+                    Timber.w("Permissao de localizacao negada");
+                }
             });
 
     @Override
@@ -54,11 +68,13 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         bindViews();
         observeViewModel();
+        setupActionButtons();
         setupPasswordCard();
         checkLocationPermission();
         viewModel.carregarTurnoAtivo();
@@ -78,6 +94,10 @@ public class HomeActivity extends AppCompatActivity {
         layoutInicio = findViewById(R.id.layoutInicio);
         tvInicio = findViewById(R.id.tvInicio);
 
+        layoutAcoesTurno = findViewById(R.id.layoutAcoesTurno);
+        btnCheckin = findViewById(R.id.btnCheckin);
+        btnFinalizarTurno = findViewById(R.id.btnFinalizarTurno);
+
         senhaVigiaCard = findViewById(R.id.senhaVigiaCard);
         progressBar = findViewById(R.id.progressBar);
     }
@@ -86,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.getTurnoState().observe(this, state -> {
             layoutTimer.setVisibility(View.GONE);
             layoutInicio.setVisibility(View.GONE);
+            layoutAcoesTurno.setVisibility(View.GONE);
             senhaVigiaCard.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
 
@@ -106,6 +127,7 @@ public class HomeActivity extends AppCompatActivity {
                 case SCHEDULED_READY:
                     tvStatusTurno.setText(R.string.home_turno_atrasado);
                     layoutInicio.setVisibility(View.VISIBLE);
+                    viewModel.setAcaoType(HomeViewModel.AcaoType.INICIAR_TURNO);
                     senhaVigiaCard.setAcao(getString(R.string.acao_iniciar_turno));
                     senhaVigiaCard.setVisibility(View.VISIBLE);
                     break;
@@ -113,6 +135,8 @@ public class HomeActivity extends AppCompatActivity {
                 case IN_PROGRESS:
                     tvStatusTurno.setText(R.string.home_turno_em_andamento);
                     layoutTimer.setVisibility(View.VISIBLE);
+                    layoutAcoesTurno.setVisibility(View.VISIBLE);
+                    tvTimerLabel.setText(R.string.home_tempo_proximo_checkin);
                     break;
 
                 case NONE:
@@ -123,7 +147,11 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         viewModel.getTempoRestante().observe(this, tempo -> {
-            if (tempo != null) tvTimer.setText(tempo);
+            if (tempo != null) {
+                tvTimer.setText(tempo);
+            } else {
+                tvTimer.setText("--:--");
+            }
         });
 
         viewModel.getPostoNome().observe(this, nome -> {
@@ -151,17 +179,110 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         viewModel.getIsActionLoading().observe(this, loading -> {
-            senhaVigiaCard.setEnabled(!Boolean.TRUE.equals(loading));
-            progressBar.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+            boolean isLoading = Boolean.TRUE.equals(loading);
+            senhaVigiaCard.setLoading(isLoading);
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.getAcaoMensagem().observe(this, mensagem -> {
+            if (mensagem == null) return;
+            if (mensagem.startsWith("home_")) {
+                int resId = getResources().getIdentifier(mensagem, "string", getPackageName());
+                if (resId != 0) {
+                    Snackbar.make(findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT).show();
+                }
+                senhaVigiaCard.setVisibility(View.GONE);
+                senhaVigiaCard.resetSenha();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), mensagem, Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+        viewModel.getIsProximoFinalizar().observe(this, isFinalizar -> {
+            if (isFinalizar != null && isFinalizar) {
+                tvTimerLabel.setText(R.string.home_tempo_finalizar_turno);
+                btnCheckin.setVisibility(View.GONE);
+                btnFinalizarTurno.setVisibility(View.VISIBLE);
+            } else {
+                tvTimerLabel.setText(R.string.home_tempo_proximo_checkin);
+                btnCheckin.setVisibility(View.VISIBLE);
+                btnFinalizarTurno.setVisibility(View.VISIBLE);
+            }
+        });
+
+        viewModel.getAcaoType().observe(this, type -> {
+            if (type == null) return;
+            switch (type) {
+                case INICIAR_TURNO:
+                    senhaVigiaCard.setAcao(getString(R.string.acao_iniciar_turno));
+                    break;
+                case ENVIAR_CHECKIN:
+                    senhaVigiaCard.setAcao(getString(R.string.acao_enviar_checkin));
+                    break;
+                case FINALIZAR_TURNO:
+                    senhaVigiaCard.setAcao(getString(R.string.acao_finalizar_turno));
+                    break;
+            }
+        });
+    }
+
+    private void setupActionButtons() {
+        btnCheckin.setOnClickListener(v -> {
+            viewModel.setAcaoType(HomeViewModel.AcaoType.ENVIAR_CHECKIN);
+            senhaVigiaCard.setVisibility(View.VISIBLE);
+            senhaVigiaCard.resetSenha();
+            senhaVigiaCard.requestFocus();
+        });
+
+        btnFinalizarTurno.setOnClickListener(v -> {
+            viewModel.setAcaoType(HomeViewModel.AcaoType.FINALIZAR_TURNO);
+            senhaVigiaCard.setVisibility(View.VISIBLE);
+            senhaVigiaCard.resetSenha();
+            senhaVigiaCard.requestFocus();
         });
     }
 
     private void setupPasswordCard() {
         senhaVigiaCard.setOnEnviarListener(v -> {
             String senha = senhaVigiaCard.getSenha();
-            viewModel.executarAcao(deviceId, 0.0, 0.0, senha);
-            senhaVigiaCard.mostrarSucesso();
+            senhaVigiaCard.setEnabled(false);
+            obterLocalizacaoEExecutar(senha);
         });
+    }
+
+    private void obterLocalizacaoEExecutar(String senha) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Timber.w("Localizacao sem permissao, executando sem coordenadas");
+            viewModel.executarAcao(deviceId, 0.0, 0.0, senha);
+            senhaVigiaCard.resetSenha();
+            senhaVigiaCard.setEnabled(true);
+            return;
+        }
+
+        fusedLocationClient.getCurrentLocation(
+                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    senhaVigiaCard.setEnabled(true);
+                    if (location != null && isLocalizacaoValida(location.getLatitude(), location.getLongitude())) {
+                        Timber.i("Localizacao obtida: lat=%.6f, lon=%.6f", location.getLatitude(), location.getLongitude());
+                        viewModel.executarAcao(deviceId, location.getLatitude(), location.getLongitude(), senha);
+                    } else {
+                        Timber.w("Localizacao invalida ou nula: lat=%.6f, lon=%.6f",
+                                location != null ? location.getLatitude() : 0.0,
+                                location != null ? location.getLongitude() : 0.0);
+                        viewModel.executarAcao(deviceId, 0.0, 0.0, senha);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    senhaVigiaCard.setEnabled(true);
+                    Timber.e(e, "Falha ao obter localizacao atual");
+                    viewModel.executarAcao(deviceId, 0.0, 0.0, senha);
+                });
+    }
+
+    private boolean isLocalizacaoValida(double latitude, double longitude) {
+        return Math.abs(latitude) > 0.001 || Math.abs(longitude) > 0.001;
     }
 
     private void checkLocationPermission() {

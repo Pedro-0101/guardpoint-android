@@ -37,4 +37,12 @@
     <string name="nav_alertas">Alertas</string>
     <string name="nav_configuracoes">Configurações</string>
     <string name="nav_sair">Sair</string>
+    <string name="acao_iniciar_turno">Iniciar turno</string>
+    <string name="acao_enviar_checkin">Enviar check-in</string>
+    <string name="acao_finalizar_turno">Finalizar turno</string>
+    <string name="home_turno_iniciado_sucesso">Turno iniciado com sucesso!</string>
+    <string name="home_checkin_sucesso">Check-in enviado com sucesso!</string>
+    <string name="home_turno_finalizado_sucesso">Turno finalizado com sucesso!</string>
+    <string name="home_tempo_proximo_checkin">Tempo para próximo check-in</string>
+    <string name="home_tempo_finalizar_turno">Tempo para finalizar turno</string>
 </resources>

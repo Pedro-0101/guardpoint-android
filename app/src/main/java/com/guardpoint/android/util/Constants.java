@@ -10,4 +10,6 @@ public class Constants {
     public static final String KEY_USER_NOME = "user_nome";
     public static final String KEY_USER_ROLE = "user_role";
     public static final String KEY_BIOMETRIC_ENABLED = "biometric_enabled";
+    public static final String KEY_DEVICE_SECRET = "device_secret";
+    public static final String KEY_POSTO_NOME = "posto_nome";
 }
