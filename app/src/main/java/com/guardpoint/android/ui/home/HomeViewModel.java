@@ -15,6 +15,7 @@ import timber.log.Timber;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -50,6 +51,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> tempoRestante = new MutableLiveData<>();
     private final MutableLiveData<String> postoNome = new MutableLiveData<>();
     private final MutableLiveData<String> inicioPrevisto = new MutableLiveData<>();
+    private final MutableLiveData<String> dataPrevista = new MutableLiveData<>();
     private final MutableLiveData<String> userNome = new MutableLiveData<>();
     private final MutableLiveData<String> userRole = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
@@ -120,6 +122,7 @@ public class HomeViewModel extends ViewModel {
             if (inicioPrev > 0) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
                 inicioPrevisto.postValue(sdf.format(new Date(inicioPrev)));
+                dataPrevista.postValue(formatarData(inicioPrev));
             }
         }
     }
@@ -292,6 +295,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<String> getTempoRestante() { return tempoRestante; }
     public LiveData<String> getPostoNome() { return postoNome; }
     public LiveData<String> getInicioPrevisto() { return inicioPrevisto; }
+    public LiveData<String> getDataPrevista() { return dataPrevista; }
     public LiveData<String> getUserNome() { return userNome; }
     public LiveData<String> getUserRole() { return userRole; }
     public LiveData<Boolean> getIsOnline() { return networkMonitor.isOnline(); }
@@ -300,6 +304,27 @@ public class HomeViewModel extends ViewModel {
     public LiveData<AcaoType> getAcaoType() { return acaoType; }
     public LiveData<Boolean> getIsProximoFinalizar() { return isProximoFinalizar; }
     public Turno getCurrentTurno() { return currentTurno; }
+
+    private String formatarData(long millis) {
+        Calendar hoje = Calendar.getInstance();
+        Calendar data = Calendar.getInstance();
+        data.setTimeInMillis(millis);
+
+        if (hoje.get(Calendar.YEAR) == data.get(Calendar.YEAR)
+                && hoje.get(Calendar.DAY_OF_YEAR) == data.get(Calendar.DAY_OF_YEAR)) {
+            return "Hoje";
+        }
+
+        Calendar amanha = Calendar.getInstance();
+        amanha.add(Calendar.DAY_OF_YEAR, 1);
+        if (amanha.get(Calendar.YEAR) == data.get(Calendar.YEAR)
+                && amanha.get(Calendar.DAY_OF_YEAR) == data.get(Calendar.DAY_OF_YEAR)) {
+            return "Amanh\u00e3";
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM", Locale.getDefault());
+        return sdf.format(new Date(millis));
+    }
 
     private long parseIso8601(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) return 0L;

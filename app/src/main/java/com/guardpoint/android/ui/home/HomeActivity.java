@@ -42,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private LinearLayout layoutInicio;
     private TextView tvInicio;
+    private TextView tvData;
 
     private LinearLayout layoutAcoesTurno;
     private MaterialButton btnCheckin;
@@ -93,6 +94,7 @@ public class HomeActivity extends AppCompatActivity {
 
         layoutInicio = findViewById(R.id.layoutInicio);
         tvInicio = findViewById(R.id.tvInicio);
+        tvData = findViewById(R.id.tvData);
 
         layoutAcoesTurno = findViewById(R.id.layoutAcoesTurno);
         btnCheckin = findViewById(R.id.btnCheckin);
@@ -164,6 +166,10 @@ public class HomeActivity extends AppCompatActivity {
 
         viewModel.getInicioPrevisto().observe(this, inicio -> {
             if (inicio != null) tvInicio.setText(inicio);
+        });
+
+        viewModel.getDataPrevista().observe(this, data -> {
+            if (data != null) tvData.setText(data);
         });
 
         viewModel.getUserNome().observe(this, nome -> {

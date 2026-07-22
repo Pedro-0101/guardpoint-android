@@ -10,9 +10,10 @@ import com.guardpoint.android.data.remote.dto.CheckinResponse;
 import com.guardpoint.android.data.remote.dto.FinalizarTurnoRequest;
 import com.guardpoint.android.data.remote.dto.IniciarResponse;
 import com.guardpoint.android.data.remote.dto.IniciarTurnoRequest;
-import com.guardpoint.android.data.remote.dto.TurnoListResponse;
+import com.guardpoint.android.data.remote.dto.VigiaTurnoInfo;
+import com.guardpoint.android.data.remote.dto.VigiaTurnoResponse;
+import com.guardpoint.android.data.remote.dto.VigiaProximoTurno;
 import com.guardpoint.android.data.remote.dto.TurnoResponse;
-import com.guardpoint.android.data.remote.dto.TurnoStatusResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.TurnoRepository;
@@ -47,39 +48,70 @@ public class TurnoRepositoryImpl implements TurnoRepository {
         MutableLiveData<Resource<Turno>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
-        api.getStatusTurno().enqueue(new Callback<TurnoStatusResponse>() {
+        api.getVigiaTurno().enqueue(new Callback<VigiaTurnoResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TurnoStatusResponse> call, @NonNull Response<TurnoStatusResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getTurno() != null) {
-                    TurnoStatusResponse body = response.body();
-                    TurnoResponse turnoResponse = body.getTurno();
-                    Timber.i("getStatusTurno OK: status=%s, proximoDeadline=%s, tipo=%s, checkinsHoje=%d",
-                            turnoResponse.getStatus(), body.getProximoDeadline(),
-                            body.getTipoProximoDeadline(), body.getCheckinsHoje());
-                    long ultimoCheckinMillis = System.currentTimeMillis();
-                    if (body.getUltimoCheckin() != null) {
-                        ultimoCheckinMillis = parseIso8601(body.getUltimoCheckin().getTimestampCriacao());
-                    }
-                    long proximoDeadlineMillis = parseIso8601(body.getProximoDeadline());
-                    String tipoProximoDeadline = body.getTipoProximoDeadline();
+            public void onResponse(@NonNull Call<VigiaTurnoResponse> call, @NonNull Response<VigiaTurnoResponse> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Timber.w("getVigiaTurno erro HTTP: code=%d", response.code());
+                    result.setValue(Resource.error("Erro ao buscar dados do turno"));
+                    return;
+                }
 
-                    if (turnoResponse.getPostoNome() == null) {
-                        buscarTurnoCompleto(result, turnoResponse, ultimoCheckinMillis,
-                                proximoDeadlineMillis, tipoProximoDeadline);
-                    } else {
-                        result.setValue(Resource.success(
-                                mapToDomain(turnoResponse, ultimoCheckinMillis, proximoDeadlineMillis, tipoProximoDeadline)));
+                VigiaTurnoResponse body = response.body();
+
+                if (body.isTemTurnoAtivo() && body.getTurno() != null) {
+                    VigiaTurnoInfo info = body.getTurno();
+                    Timber.i("Turno ativo: status=%s, deadline=%s, tipo=%s, checkins=%d, atrasado=%s",
+                            info.getStatus(), info.getProximoDeadline(),
+                            info.getTipoProximoDeadline(), info.getCheckinsHoje(), info.isAtrasado());
+
+                    long ultimoCheckinMillis = System.currentTimeMillis();
+                    if (info.getUltimoCheckin() != null) {
+                        ultimoCheckinMillis = parseIso8601(info.getUltimoCheckin().getTimestampCriacao());
                     }
+
+                    String nomePosto = info.getPostoNome();
+                    if (nomePosto == null && info.getPosto() != null) {
+                        nomePosto = info.getPosto().getNome();
+                    }
+
+                    result.setValue(Resource.success(new Turno(
+                            info.getId(),
+                            info.getPosto() != null ? info.getPosto().getId() : "",
+                            nomePosto,
+                            info.getIntervaloMin(),
+                            info.getTokenSessao(),
+                            info.getStatus(),
+                            ultimoCheckinMillis,
+                            parseIso8601(info.getInicioPrevisto()),
+                            parseIso8601(info.getProximoDeadline()),
+                            info.getTipoProximoDeadline()
+                    )));
+                } else if (!body.isTemTurnoAtivo() && body.getProximoTurno() != null) {
+                    VigiaProximoTurno prox = body.getProximoTurno();
+                    String nomePosto = prox.getPosto() != null ? prox.getPosto().getNome() : "";
+                    Timber.i("Proximo turno: data=%s, inicio=%s, posto=%s", prox.getData(), prox.getHoraInicio(), nomePosto);
+
+                    result.setValue(Resource.success(new Turno(
+                            "",
+                            prox.getPosto() != null ? prox.getPosto().getId() : "",
+                            nomePosto,
+                            0,
+                            null,
+                            "agendado",
+                            System.currentTimeMillis(),
+                            parseIso8601(prox.getInicioPrevisto())
+                    )));
                 } else {
-                    Timber.w("getStatusTurno sem turno ativo: code=%d", response.code());
-                    buscarProximoTurno(result);
+                    Timber.i("Nenhum turno ativo ou agendado");
+                    result.setValue(Resource.error("Nenhum turno encontrado"));
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<TurnoStatusResponse> call, @NonNull Throwable t) {
-                Timber.e(t, "getStatusTurno onFailure");
-                buscarProximoTurno(result);
+            public void onFailure(@NonNull Call<VigiaTurnoResponse> call, @NonNull Throwable t) {
+                Timber.e(t, "getVigiaTurno onFailure");
+                result.setValue(Resource.error("Erro de conexao: " + t.getMessage()));
             }
         });
 
@@ -98,8 +130,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             public void onResponse(@NonNull Call<IniciarResponse> call, @NonNull Response<IniciarResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getTurno() != null) {
                     IniciarResponse body = response.body();
-                    Timber.i("iniciarTurno API OK: atrasado=%s, proximoDeadline=%s, tipo=%s",
-                            body.isAtrasado(), body.getProximoDeadline(), body.getTipoProximoDeadline());
+                    Timber.i("iniciarTurno OK: atrasado=%s, proximoDeadline=%s", body.isAtrasado(), body.getProximoDeadline());
                     long proximoDeadlineMillis = parseIso8601(body.getProximoDeadline());
                     String tipoProximoDeadline = body.getTipoProximoDeadline();
                     result.setValue(Resource.success(
@@ -109,7 +140,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     try {
                         if (response.errorBody() != null) errBody = response.errorBody().string();
                     } catch (Exception ignored) {}
-                    Timber.e("iniciarTurno API erro HTTP: code=%d, errorBody=%s", response.code(), errBody);
+                    Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), errBody);
                     result.setValue(Resource.error("Erro ao iniciar turno (HTTP " + response.code() + ")"));
                 }
             }
@@ -117,7 +148,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             @Override
             public void onFailure(@NonNull Call<IniciarResponse> call, @NonNull Throwable t) {
                 Timber.e(t, "iniciarTurno onFailure");
-                result.setValue(Resource.error("Erro de conexão ao iniciar turno: " + t.getMessage()));
+                result.setValue(Resource.error("Erro de conexao ao iniciar turno: " + t.getMessage()));
             }
         });
 
@@ -137,7 +168,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             public void onResponse(@NonNull Call<CheckinResponse> call, @NonNull Response<CheckinResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     CheckinResponse body = response.body();
-                    Timber.i("realizarCheckin API OK: status=%s, proximoDeadline=%s, tipo=%s, atrasado=%s",
+                    Timber.i("checkin OK: status=%s, proximoDeadline=%s, tipo=%s, atrasado=%s",
                             body.getStatus(), body.getProximoDeadline(),
                             body.getTipoProximoDeadline(), body.isAtrasado());
                     result.setValue(Resource.success(response.body()));
@@ -146,15 +177,15 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     try {
                         if (response.errorBody() != null) errBody = response.errorBody().string();
                     } catch (Exception ignored) {}
-                    Timber.e("realizarCheckin API erro HTTP: code=%d, errorBody=%s", response.code(), errBody);
+                    Timber.e("checkin erro HTTP: code=%d, body=%s", response.code(), errBody);
                     result.setValue(Resource.error("Erro ao enviar check-in (HTTP " + response.code() + ")"));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<CheckinResponse> call, @NonNull Throwable t) {
-                Timber.e(t, "realizarCheckin onFailure");
-                result.setValue(Resource.error("Erro de conexão ao enviar check-in: " + t.getMessage()));
+                Timber.e(t, "checkin onFailure");
+                result.setValue(Resource.error("Erro de conexao ao enviar check-in: " + t.getMessage()));
             }
         });
 
@@ -173,14 +204,14 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             @Override
             public void onResponse(@NonNull Call<TurnoResponse> call, @NonNull Response<TurnoResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Timber.i("finalizarTurno API OK: status=%s", response.body().getStatus());
+                    Timber.i("finalizarTurno OK: status=%s", response.body().getStatus());
                     result.setValue(Resource.success(mapToDomain(response.body())));
                 } else {
                     String errBody = "null";
                     try {
                         if (response.errorBody() != null) errBody = response.errorBody().string();
                     } catch (Exception ignored) {}
-                    Timber.e("finalizarTurno API erro HTTP: code=%d, errorBody=%s", response.code(), errBody);
+                    Timber.e("finalizarTurno erro HTTP: code=%d, body=%s", response.code(), errBody);
                     result.setValue(Resource.error("Erro ao finalizar turno (HTTP " + response.code() + ")"));
                 }
             }
@@ -188,63 +219,11 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             @Override
             public void onFailure(@NonNull Call<TurnoResponse> call, @NonNull Throwable t) {
                 Timber.e(t, "finalizarTurno onFailure");
-                result.setValue(Resource.error("Erro de conexão ao finalizar turno: " + t.getMessage()));
+                result.setValue(Resource.error("Erro de conexao ao finalizar turno: " + t.getMessage()));
             }
         });
 
         return result;
-    }
-
-    private void buscarTurnoCompleto(MutableLiveData<Resource<Turno>> result,
-                                      TurnoResponse turnoResponse, long ultimoCheckinMillis,
-                                      long proximoDeadlineMillis, String tipoProximoDeadline) {
-        api.getTurnos("em_andamento").enqueue(new Callback<TurnoListResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<TurnoListResponse> call, @NonNull Response<TurnoListResponse> response) {
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().getData() != null && !response.body().getData().isEmpty()) {
-                    TurnoResponse completo = response.body().getData().get(0);
-                    TurnoResponse merged = new TurnoResponse();
-                    merged.setTurnoId(turnoResponse.getTurnoId());
-                    merged.setPostoId(turnoResponse.getPostoId());
-                    merged.setPostoNome(completo.getPostoNome());
-                    merged.setIntervaloMinutos(turnoResponse.getIntervaloMinutos());
-                    merged.setTokenSessao(turnoResponse.getTokenSessao());
-                    merged.setStatus(turnoResponse.getStatus());
-                    merged.setInicioPrevisto(turnoResponse.getInicioPrevisto());
-                    result.setValue(Resource.success(
-                            mapToDomain(merged, ultimoCheckinMillis, proximoDeadlineMillis, tipoProximoDeadline)));
-                } else {
-                    result.setValue(Resource.success(
-                            mapToDomain(turnoResponse, ultimoCheckinMillis, proximoDeadlineMillis, tipoProximoDeadline)));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<TurnoListResponse> call, @NonNull Throwable t) {
-                result.setValue(Resource.success(
-                        mapToDomain(turnoResponse, ultimoCheckinMillis, proximoDeadlineMillis, tipoProximoDeadline)));
-            }
-        });
-    }
-
-    private void buscarProximoTurno(MutableLiveData<Resource<Turno>> result) {
-        api.getTurnos("agendado").enqueue(new Callback<TurnoListResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<TurnoListResponse> call, @NonNull Response<TurnoListResponse> response) {
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().getData() != null && !response.body().getData().isEmpty()) {
-                    result.setValue(Resource.success(mapToDomain(response.body().getData().get(0))));
-                } else {
-                    result.setValue(Resource.error("Nenhum turno agendado"));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<TurnoListResponse> call, @NonNull Throwable t) {
-                result.setValue(Resource.error("Erro ao buscar turnos"));
-            }
-        });
     }
 
     private Turno mapToDomain(TurnoResponse response) {
@@ -258,10 +237,6 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                 System.currentTimeMillis(),
                 parseIso8601(response.getInicioPrevisto())
         );
-    }
-
-    private Turno mapToDomain(TurnoResponse response, long ultimoCheckinMillis, long proximoDeadlineMillis) {
-        return mapToDomain(response, ultimoCheckinMillis, proximoDeadlineMillis, null);
     }
 
     private Turno mapToDomain(TurnoResponse response, long ultimoCheckinMillis,
@@ -291,7 +266,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             }
             if (dateStr.length() > 19 && (dateStr.contains("+") || dateStr.contains("-"))) {
                 int tzIndex = Math.max(dateStr.lastIndexOf('+'), dateStr.lastIndexOf('-'));
-                if (tzIndex > 19) {
+                if (tzIndex >= 19) {
                     String datePart = dateStr.substring(0, tzIndex);
                     String tzPart = dateStr.substring(tzIndex);
                     int dotIndex = datePart.indexOf('.');

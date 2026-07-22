@@ -25,6 +25,9 @@ public class TurnoResponse {
     @SerializedName("inicio_previsto")
     private String inicioPrevisto;
 
+    @SerializedName("fim_previsto")
+    private String fimPrevisto;
+
     public TurnoResponse() {
     }
 
@@ -35,6 +38,7 @@ public class TurnoResponse {
     public String getTokenSessao() { return tokenSessao; }
     public String getStatus() { return status; }
     public String getInicioPrevisto() { return inicioPrevisto; }
+    public String getFimPrevisto() { return fimPrevisto; }
 
     public void setTurnoId(String turnoId) { this.turnoId = turnoId; }
     public void setPostoId(String postoId) { this.postoId = postoId; }
@@ -43,4 +47,5 @@ public class TurnoResponse {
     public void setTokenSessao(String tokenSessao) { this.tokenSessao = tokenSessao; }
     public void setStatus(String status) { this.status = status; }
     public void setInicioPrevisto(String inicioPrevisto) { this.inicioPrevisto = inicioPrevisto; }
+    public void setFimPrevisto(String fimPrevisto) { this.fimPrevisto = fimPrevisto; }
 }

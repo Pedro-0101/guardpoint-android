@@ -12,16 +12,13 @@ import com.guardpoint.android.data.remote.dto.IniciarTurnoRequest;
 import com.guardpoint.android.data.remote.dto.LoginRequest;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.data.remote.dto.RefreshRequest;
-import com.guardpoint.android.data.remote.dto.RefreshResponse;
-import com.guardpoint.android.data.remote.dto.TurnoListResponse;
 import com.guardpoint.android.data.remote.dto.TurnoResponse;
-import com.guardpoint.android.data.remote.dto.TurnoStatusResponse;
+import com.guardpoint.android.data.remote.dto.VigiaTurnoResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 public interface GuardPointApi {
 
@@ -29,7 +26,7 @@ public interface GuardPointApi {
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @POST("auth/refresh")
-    Call<RefreshResponse> refreshToken(@Body RefreshRequest request);
+    Call<LoginResponse> refreshToken(@Body RefreshRequest request);
 
     @POST("auth/biometric/register")
     Call<BiometricRegisterResponse> registerBiometric(@Body BiometricRegisterRequest request);
@@ -40,11 +37,8 @@ public interface GuardPointApi {
     @POST("auth/logout")
     Call<GenericResponse> logout();
 
-    @GET("turnos/status")
-    Call<TurnoStatusResponse> getStatusTurno();
-
-    @GET("turnos")
-    Call<TurnoListResponse> getTurnos(@Query("status") String status);
+    @GET("vigia/turno")
+    Call<VigiaTurnoResponse> getVigiaTurno();
 
     @POST("turnos/iniciar")
     Call<IniciarResponse> iniciarTurno(@Body IniciarTurnoRequest request);
