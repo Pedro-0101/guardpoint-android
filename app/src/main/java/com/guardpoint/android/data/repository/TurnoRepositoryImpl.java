@@ -281,7 +281,7 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                 }
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            sdf.setTimeZone(TimeZone.getDefault());
             Date date = sdf.parse(dateStr);
             return date != null ? date.getTime() : 0L;
         } catch (ParseException e) {

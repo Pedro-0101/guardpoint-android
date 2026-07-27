@@ -182,6 +182,14 @@ public class HomeViewModel extends ViewModel {
 
         switch (action) {
             case INICIAR_TURNO:
+                long agora = System.currentTimeMillis();
+                long inicioPrevisto = currentTurno.getInicioPrevistoMillis();
+                if (inicioPrevisto > 0 && agora < inicioPrevisto) {
+                    isActionLoading.setValue(false);
+                    acaoMensagem.postValue("home_erro_fora_horario");
+                    Timber.w("Bloqueado: tentativa de iniciar turno antes do horario previsto (agora=%d, previsto=%d)", agora, inicioPrevisto);
+                    return;
+                }
                 iniciarTurno(deviceId, latitude, longitude, senha);
                 break;
             case ENVIAR_CHECKIN:
@@ -330,7 +338,7 @@ public class HomeViewModel extends ViewModel {
         if (dateStr == null || dateStr.isEmpty()) return 0L;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            sdf.setTimeZone(TimeZone.getDefault());
             Date date = sdf.parse(dateStr.replace("Z", "").replaceAll("[+-]\\d{2}:\\d{2}$", ""));
             return date != null ? date.getTime() : 0L;
         } catch (ParseException e) {

@@ -124,6 +124,10 @@ public class HomeActivity extends AppCompatActivity {
                 case SCHEDULED_FUTURE:
                     tvStatusTurno.setText(R.string.home_turno_agendado);
                     layoutInicio.setVisibility(View.VISIBLE);
+                    viewModel.setAcaoType(HomeViewModel.AcaoType.INICIAR_TURNO);
+                    senhaVigiaCard.setAcao(getString(R.string.acao_iniciar_turno));
+                    senhaVigiaCard.setBloqueado(true);
+                    senhaVigiaCard.setVisibility(View.VISIBLE);
                     break;
 
                 case SCHEDULED_READY:
@@ -131,6 +135,7 @@ public class HomeActivity extends AppCompatActivity {
                     layoutInicio.setVisibility(View.VISIBLE);
                     viewModel.setAcaoType(HomeViewModel.AcaoType.INICIAR_TURNO);
                     senhaVigiaCard.setAcao(getString(R.string.acao_iniciar_turno));
+                    senhaVigiaCard.setBloqueado(false);
                     senhaVigiaCard.setVisibility(View.VISIBLE);
                     break;
 
@@ -224,9 +229,11 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case ENVIAR_CHECKIN:
                     senhaVigiaCard.setAcao(getString(R.string.acao_enviar_checkin));
+                    senhaVigiaCard.setBloqueado(false);
                     break;
                 case FINALIZAR_TURNO:
                     senhaVigiaCard.setAcao(getString(R.string.acao_finalizar_turno));
+                    senhaVigiaCard.setBloqueado(false);
                     break;
             }
         });
@@ -235,6 +242,7 @@ public class HomeActivity extends AppCompatActivity {
     private void setupActionButtons() {
         btnCheckin.setOnClickListener(v -> {
             viewModel.setAcaoType(HomeViewModel.AcaoType.ENVIAR_CHECKIN);
+            senhaVigiaCard.setBloqueado(false);
             senhaVigiaCard.setVisibility(View.VISIBLE);
             senhaVigiaCard.resetSenha();
             senhaVigiaCard.requestFocus();
@@ -242,6 +250,7 @@ public class HomeActivity extends AppCompatActivity {
 
         btnFinalizarTurno.setOnClickListener(v -> {
             viewModel.setAcaoType(HomeViewModel.AcaoType.FINALIZAR_TURNO);
+            senhaVigiaCard.setBloqueado(false);
             senhaVigiaCard.setVisibility(View.VISIBLE);
             senhaVigiaCard.resetSenha();
             senhaVigiaCard.requestFocus();
@@ -250,6 +259,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupPasswordCard() {
         senhaVigiaCard.setOnEnviarListener(v -> {
+            if (senhaVigiaCard.isBloqueado()) {
+                Timber.w("setupPasswordCard: envio bloqueado pelo setBloqueado");
+                return;
+            }
             String senha = senhaVigiaCard.getSenha();
             senhaVigiaCard.setEnabled(false);
             obterLocalizacaoEExecutar(senha);

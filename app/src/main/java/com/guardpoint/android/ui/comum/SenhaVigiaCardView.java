@@ -47,7 +47,7 @@ public class SenhaVigiaCardView extends LinearLayout {
         btnEnviar = findViewById(R.id.btnEnviar);
 
         etSenha.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
+            if (hasFocus && !bloqueado) {
                 inputLayoutSenha.setError(null);
             }
         });
@@ -94,10 +94,31 @@ public class SenhaVigiaCardView extends LinearLayout {
         Snackbar.make(this, mensagem, Snackbar.LENGTH_LONG).show();
     }
 
+    private boolean bloqueado = false;
+
+    public void setBloqueado(boolean bloquear) {
+        this.bloqueado = bloquear;
+        etSenha.setEnabled(!bloquear);
+        btnEnviar.setEnabled(!bloquear);
+        if (bloquear) {
+            inputLayoutSenha.setHintEnabled(false);
+            etSenha.setHint(getContext().getString(R.string.senha_vigia_bloqueado_hint));
+            inputLayoutSenha.setError(getContext().getString(R.string.senha_vigia_bloqueado_msg));
+        } else {
+            inputLayoutSenha.setHintEnabled(true);
+            etSenha.setHint(getContext().getString(R.string.senha_vigia_hint));
+            inputLayoutSenha.setError(null);
+        }
+    }
+
+    public boolean isBloqueado() {
+        return bloqueado;
+    }
+
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        etSenha.setEnabled(enabled);
-        btnEnviar.setEnabled(enabled);
+        etSenha.setEnabled(enabled && !bloqueado);
+        btnEnviar.setEnabled(enabled && !bloqueado);
     }
 
     public void resetSenha() {
