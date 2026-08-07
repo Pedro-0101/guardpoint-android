@@ -67,6 +67,7 @@ public class HomeViewModel extends ViewModel {
     private Observer<Resource<Turno>> onTurnoAtivoLoaded;
     private Timer timer;
     private Timer timerRelogio;
+    private Timer timerDesbloqueio;
 
     @Inject
     public HomeViewModel(TurnoRepository turnoRepository,
@@ -115,6 +116,7 @@ public class HomeViewModel extends ViewModel {
                 turno.getTipoProximoDeadline());
 
         if ("em_andamento".equals(turno.getStatus())) {
+            cancelarTimerDesbloqueio();
             turnoState.postValue(TurnoState.IN_PROGRESS);
             isProximoFinalizar.postValue(turno.isProximoFinalizar());
             iniciarTimer(turno);
@@ -123,9 +125,11 @@ public class HomeViewModel extends ViewModel {
             long agora = System.currentTimeMillis();
 
             if (inicioPrev > 0 && inicioPrev <= agora) {
+                cancelarTimerDesbloqueio();
                 turnoState.postValue(TurnoState.SCHEDULED_READY);
             } else {
                 turnoState.postValue(TurnoState.SCHEDULED_FUTURE);
+                agendarDesbloqueio(inicioPrev);
             }
 
             if (inicioPrev > 0) {
@@ -159,6 +163,35 @@ public class HomeViewModel extends ViewModel {
                 }
             }
         }, 0, 1000);
+    }
+
+    private void cancelarTimerDesbloqueio() {
+        if (timerDesbloqueio != null) {
+            timerDesbloqueio.cancel();
+            timerDesbloqueio = null;
+        }
+    }
+
+    private void agendarDesbloqueio(long inicioPrevistoMillis) {
+        cancelarTimerDesbloqueio();
+        long delay = inicioPrevistoMillis - System.currentTimeMillis();
+        if (delay <= 0) {
+            turnoState.postValue(TurnoState.SCHEDULED_READY);
+            return;
+        }
+        delay += 500;
+        timerDesbloqueio = new Timer();
+        timerDesbloqueio.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentTurno != null
+                        && TurnoState.SCHEDULED_FUTURE == turnoState.getValue()
+                        && currentTurno.getInicioPrevistoMillis() <= System.currentTimeMillis()) {
+                    Timber.i("Timer desbloqueio: horario do turno atingido, liberando");
+                    turnoState.postValue(TurnoState.SCHEDULED_READY);
+                }
+            }
+        }, delay);
     }
 
     private void iniciarRelogio() {
@@ -383,6 +416,7 @@ public class HomeViewModel extends ViewModel {
         super.onCleared();
         if (timer != null) timer.cancel();
         if (timerRelogio != null) timerRelogio.cancel();
+        cancelarTimerDesbloqueio();
         if (turnoAtivoObservable != null) {
             turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
         }
