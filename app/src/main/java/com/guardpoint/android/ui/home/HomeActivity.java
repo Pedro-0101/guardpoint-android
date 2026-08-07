@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.guardpoint.android.R;
 import com.guardpoint.android.ui.comum.SenhaVigiaCardView;
+import com.guardpoint.android.util.ErrorNotification;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import timber.log.Timber;
@@ -215,7 +216,7 @@ public class HomeActivity extends AppCompatActivity {
                 senhaVigiaCard.setVisibility(View.GONE);
                 senhaVigiaCard.resetSenha();
             } else {
-                Snackbar.make(findViewById(android.R.id.content), mensagem, Snackbar.LENGTH_LONG).show();
+                ErrorNotification.showError(findViewById(android.R.id.content), mensagem);
             }
         });
 

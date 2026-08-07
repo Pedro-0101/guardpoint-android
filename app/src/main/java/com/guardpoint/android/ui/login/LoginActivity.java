@@ -6,6 +6,8 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -50,6 +53,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etSenha;
     private MaterialButton btnLogin;
     private View pbLoading;
+    private MaterialCardView errorBanner;
+    private ImageView ivErrorIcon;
+    private TextView tvErrorText;
     private TextView tvError;
 
     private boolean isVigiaMode = false;
@@ -89,6 +95,9 @@ public class LoginActivity extends AppCompatActivity {
         etSenha = findViewById(R.id.etSenha);
         btnLogin = findViewById(R.id.btnLogin);
         pbLoading = findViewById(R.id.pbLoading);
+        errorBanner = findViewById(R.id.errorBanner);
+        ivErrorIcon = findViewById(R.id.ivErrorIcon);
+        tvErrorText = findViewById(R.id.tvErrorText);
         tvError = findViewById(R.id.tvError);
     }
 
@@ -115,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         tilSenha.requestLayout();
 
-        tvError.setVisibility(View.GONE);
+        hideError();
     }
 
     private void setupTextWatchers() {
@@ -126,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-                tvError.setVisibility(View.GONE);
+                hideError();
             }
         };
         etEmail.addTextChangedListener(textWatcher);
@@ -198,8 +207,7 @@ public class LoginActivity extends AppCompatActivity {
                 case ERROR:
                     setLoading(false);
                     Timber.e("Login biometrico falhou: %s", resource.getMessage());
-                    tvError.setText(resource.getMessage());
-                    tvError.setVisibility(View.VISIBLE);
+                    showError(resource.getMessage());
                     viewModel.logout();
                     break;
             }
@@ -214,8 +222,7 @@ public class LoginActivity extends AppCompatActivity {
             String nome = etNome.getText() != null ? etNome.getText().toString().trim() : "";
 
             if (codigoEmpresa.isEmpty() || nome.isEmpty() || senha.isEmpty()) {
-                tvError.setText(getString(R.string.login_error_empty_fields_vigia));
-                tvError.setVisibility(View.VISIBLE);
+                showError(getString(R.string.login_error_empty_fields_vigia));
                 return;
             }
 
@@ -229,8 +236,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = etEmail.getText() != null ? etEmail.getText().toString().trim() : "";
 
             if (email.isEmpty() || senha.isEmpty()) {
-                tvError.setText(getString(R.string.login_error_empty_fields));
-                tvError.setVisibility(View.VISIBLE);
+                showError(getString(R.string.login_error_empty_fields));
                 return;
             }
 
@@ -254,8 +260,7 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case ERROR:
                 setLoading(false);
-                tvError.setText(resource.getMessage());
-                tvError.setVisibility(View.VISIBLE);
+                showError(resource.getMessage());
                 break;
         }
     }
@@ -328,5 +333,23 @@ public class LoginActivity extends AppCompatActivity {
         etNome.setEnabled(!loading);
         etSenha.setEnabled(!loading);
         pbLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
+
+    private void showError(String message) {
+        if (message == null || message.isEmpty()) {
+            hideError();
+            return;
+        }
+        tvErrorText.setText(message);
+        if (errorBanner.getVisibility() != View.VISIBLE) {
+            errorBanner.setVisibility(View.VISIBLE);
+            AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
+            fadeIn.setDuration(200);
+            errorBanner.startAnimation(fadeIn);
+        }
+    }
+
+    private void hideError() {
+        errorBanner.setVisibility(View.GONE);
     }
 }

@@ -17,6 +17,7 @@ import com.guardpoint.android.data.remote.dto.TurnoResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.TurnoRepository;
+import com.guardpoint.android.util.ErrorParser;
 
 import timber.log.Timber;
 
@@ -136,12 +137,9 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     result.setValue(Resource.success(
                             mapToDomain(body.getTurno(), System.currentTimeMillis(), proximoDeadlineMillis, tipoProximoDeadline)));
                 } else {
-                    String errBody = "null";
-                    try {
-                        if (response.errorBody() != null) errBody = response.errorBody().string();
-                    } catch (Exception ignored) {}
-                    Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), errBody);
-                    result.setValue(Resource.error("Erro ao iniciar turno (HTTP " + response.code() + ")"));
+                    String err = ErrorParser.parse(response);
+                    Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
                 }
             }
 
@@ -173,12 +171,9 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                             body.getTipoProximoDeadline(), body.isAtrasado());
                     result.setValue(Resource.success(response.body()));
                 } else {
-                    String errBody = "null";
-                    try {
-                        if (response.errorBody() != null) errBody = response.errorBody().string();
-                    } catch (Exception ignored) {}
-                    Timber.e("checkin erro HTTP: code=%d, body=%s", response.code(), errBody);
-                    result.setValue(Resource.error("Erro ao enviar check-in (HTTP " + response.code() + ")"));
+                    String err = ErrorParser.parse(response);
+                    Timber.e("checkin erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
                 }
             }
 
@@ -207,12 +202,9 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     Timber.i("finalizarTurno OK: status=%s", response.body().getStatus());
                     result.setValue(Resource.success(mapToDomain(response.body())));
                 } else {
-                    String errBody = "null";
-                    try {
-                        if (response.errorBody() != null) errBody = response.errorBody().string();
-                    } catch (Exception ignored) {}
-                    Timber.e("finalizarTurno erro HTTP: code=%d, body=%s", response.code(), errBody);
-                    result.setValue(Resource.error("Erro ao finalizar turno (HTTP " + response.code() + ")"));
+                    String err = ErrorParser.parse(response);
+                    Timber.e("finalizarTurno erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
                 }
             }
 

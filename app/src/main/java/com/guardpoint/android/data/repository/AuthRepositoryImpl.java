@@ -14,8 +14,7 @@ import com.guardpoint.android.data.remote.dto.GenericResponse;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.repository.AuthRepository;
-
-import java.io.IOException;
+import com.guardpoint.android.util.ErrorParser;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -66,7 +65,7 @@ public class AuthRepositoryImpl implements AuthRepository {
                     }
                     result.setValue(Resource.success(body));
                 } else {
-                    result.setValue(Resource.error(parseError(response)));
+                    result.setValue(Resource.error(ErrorParser.parse(response)));
                 }
             }
 
@@ -95,7 +94,7 @@ public class AuthRepositoryImpl implements AuthRepository {
                     Timber.i("Dispositivo registrado: device_id=%s", body.getDeviceId());
                     result.setValue(Resource.success(body));
                 } else {
-                    String err = parseError(response);
+                    String err = ErrorParser.parse(response);
                     Timber.e("registerDevice erro HTTP: code=%d, body=%s", response.code(), err);
                     result.setValue(Resource.error(err));
                 }
@@ -133,7 +132,7 @@ public class AuthRepositoryImpl implements AuthRepository {
                     Timber.i("Login biometrico OK: usuario=%s", body.getUsuario() != null ? body.getUsuario().getNome() : "?");
                     result.setValue(Resource.success(body));
                 } else {
-                    String err = parseError(response);
+                    String err = ErrorParser.parse(response);
                     Timber.e("loginBiometric erro HTTP: code=%d, body=%s", response.code(), err);
                     result.setValue(Resource.error(err));
                 }
@@ -180,15 +179,6 @@ public class AuthRepositoryImpl implements AuthRepository {
             }
         });
         securePrefs.clear();
-    }
-
-    private String parseError(Response<?> response) {
-        try {
-            if (response.errorBody() != null) return response.errorBody().string();
-        } catch (IOException e) {
-            return "Erro desconhecido";
-        }
-        return "Erro " + response.code();
     }
 
     private static class JwtPayload {
