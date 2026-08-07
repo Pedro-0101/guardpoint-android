@@ -32,8 +32,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_4"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                app:endIconMode="password_toggle"
-                app:passwordToggleEnabled="true"
                 android:hint="@string/senha_vigia_hint">
 
                 <com.google.android.material.textfield.TextInputEditText
