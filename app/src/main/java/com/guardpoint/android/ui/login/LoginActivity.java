@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -76,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         setupModeToggle();
         setupTextWatchers();
         setupBiometricPrompt();
+        setupKeyboardForcing();
 
         btnLogin.setOnClickListener(v -> onLoginClicked());
         checkExistingSession();
@@ -176,6 +178,27 @@ public class LoginActivity extends AppCompatActivity {
                         BiometricManager.Authenticators.BIOMETRIC_WEAK |
                         BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 .build();
+    }
+
+    private void setupKeyboardForcing() {
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (hasFocus) {
+                showKeyboard(v);
+            }
+        };
+        etEmail.setOnFocusChangeListener(focusListener);
+        etSenha.setOnFocusChangeListener(focusListener);
+        etCodigoEmpresa.setOnFocusChangeListener(focusListener);
+        etNome.setOnFocusChangeListener(focusListener);
+    }
+
+    private void showKeyboard(View view) {
+        view.post(() -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 
     private void checkExistingSession() {

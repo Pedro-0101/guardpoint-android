@@ -6,6 +6,8 @@ import com.guardpoint.android.util.Constants;
 
 import java.util.concurrent.TimeUnit;
 
+import timber.log.Timber;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -39,6 +41,7 @@ public class NetworkModule {
     @Provides
     @Singleton
     public Retrofit provideRetrofit(OkHttpClient client) {
+        Timber.i("GuardPoint BASE_URL = %s", Constants.BASE_URL);
         return new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .client(client)
