@@ -47,5 +47,6 @@
     <string name="home_turno_finalizado_sucesso">Turno finalizado com sucesso!</string>
     <string name="home_tempo_proximo_checkin">Tempo para próximo check-in</string>
     <string name="home_tempo_finalizar_turno">Tempo para finalizar turno</string>
+    <string name="home_hora_atual">Hora atual</string>
     <string name="home_erro_fora_horario">O turno ainda não pode ser iniciado. Aguarde o horário previsto.</string>
 </resources>

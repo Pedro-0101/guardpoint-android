@@ -58,11 +58,13 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> acaoMensagem = new MutableLiveData<>();
     private final MutableLiveData<AcaoType> acaoType = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isProximoFinalizar = new MutableLiveData<>(false);
+    private final MutableLiveData<String> relogioAtual = new MutableLiveData<>();
 
     private Turno currentTurno;
     private LiveData<Resource<Turno>> turnoAtivoObservable;
     private Observer<Resource<Turno>> onTurnoAtivoLoaded;
     private Timer timer;
+    private Timer timerRelogio;
 
     @Inject
     public HomeViewModel(TurnoRepository turnoRepository,
@@ -75,6 +77,8 @@ public class HomeViewModel extends ViewModel {
         userNome.setValue(securePrefs.getUserNome());
         userRole.setValue(securePrefs.getUserRole());
         postoNome.setValue(securePrefs.getPostoNome());
+
+        iniciarRelogio();
 
         onTurnoAtivoLoaded = resource -> {
             if (resource == null) return;
@@ -148,6 +152,18 @@ public class HomeViewModel extends ViewModel {
                     long segundos = (resto / 1000) % 60;
                     tempoRestante.postValue(String.format("%02d:%02d", minutos, segundos));
                 }
+            }
+        }, 0, 1000);
+    }
+
+    private void iniciarRelogio() {
+        if (timerRelogio != null) timerRelogio.cancel();
+        timerRelogio = new Timer();
+        timerRelogio.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                relogioAtual.postValue(sdf.format(new Date()));
             }
         }, 0, 1000);
     }
@@ -311,6 +327,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<String> getAcaoMensagem() { return acaoMensagem; }
     public LiveData<AcaoType> getAcaoType() { return acaoType; }
     public LiveData<Boolean> getIsProximoFinalizar() { return isProximoFinalizar; }
+    public LiveData<String> getRelogioAtual() { return relogioAtual; }
     public Turno getCurrentTurno() { return currentTurno; }
 
     private String formatarData(long millis) {
@@ -350,6 +367,7 @@ public class HomeViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         if (timer != null) timer.cancel();
+        if (timerRelogio != null) timerRelogio.cancel();
         if (turnoAtivoObservable != null) {
             turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
         }

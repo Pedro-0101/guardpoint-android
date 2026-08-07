@@ -48,6 +48,8 @@ public class HomeActivity extends AppCompatActivity {
     private MaterialButton btnCheckin;
     private MaterialButton btnFinalizarTurno;
 
+    private TextView tvRelogio;
+
     private SenhaVigiaCardView senhaVigiaCard;
     private ProgressBar progressBar;
 
@@ -99,6 +101,8 @@ public class HomeActivity extends AppCompatActivity {
         layoutAcoesTurno = findViewById(R.id.layoutAcoesTurno);
         btnCheckin = findViewById(R.id.btnCheckin);
         btnFinalizarTurno = findViewById(R.id.btnFinalizarTurno);
+
+        tvRelogio = findViewById(R.id.tvRelogio);
 
         senhaVigiaCard = findViewById(R.id.senhaVigiaCard);
         progressBar = findViewById(R.id.progressBar);
@@ -158,6 +162,12 @@ public class HomeActivity extends AppCompatActivity {
                 tvTimer.setText(tempo);
             } else {
                 tvTimer.setText("--:--");
+            }
+        });
+
+        viewModel.getRelogioAtual().observe(this, hora -> {
+            if (hora != null) {
+                tvRelogio.setText(hora);
             }
         });
 
