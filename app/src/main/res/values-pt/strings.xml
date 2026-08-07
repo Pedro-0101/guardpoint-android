@@ -33,6 +33,9 @@
     <string name="generic_cancel">Cancelar</string>
     <string name="generic_confirm">Confirmar</string>
     <string name="generic_back">Voltar</string>
+    <string name="token_expirado_title">Sessão expirada</string>
+    <string name="token_expirado_message">Sua sessão expirou. Faça login novamente para continuar.</string>
+    <string name="token_expirado_button">Ir para o login</string>
     <string name="nav_home">Início</string>
     <string name="nav_turnos">Turnos</string>
     <string name="nav_checkin">Check-in</string>

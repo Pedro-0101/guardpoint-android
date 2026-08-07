@@ -1,6 +1,7 @@
 package com.guardpoint.android.ui.home;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +23,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.guardpoint.android.R;
 import com.guardpoint.android.ui.comum.SenhaVigiaCardView;
+import com.guardpoint.android.ui.login.LoginActivity;
 import com.guardpoint.android.util.ErrorNotification;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -248,6 +251,12 @@ public class HomeActivity extends AppCompatActivity {
                     break;
             }
         });
+
+        viewModel.getSessaoExpirada().observe(this, expirada -> {
+            if (Boolean.TRUE.equals(expirada)) {
+                showTokenExpiradoDialog();
+            }
+        });
     }
 
     private void setupActionButtons() {
@@ -320,6 +329,21 @@ public class HomeActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+    }
+
+    private void showTokenExpiradoDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.token_expirado_title)
+                .setMessage(R.string.token_expirado_message)
+                .setPositiveButton(R.string.token_expirado_button, (dialog, which) -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
+                    finish();
+                })
+                .setCancelable(false)
+                .show();
     }
 
     @Override

@@ -53,8 +53,9 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             @Override
             public void onResponse(@NonNull Call<VigiaTurnoResponse> call, @NonNull Response<VigiaTurnoResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Timber.w("getVigiaTurno erro HTTP: code=%d", response.code());
-                    result.setValue(Resource.error("Erro ao buscar dados do turno"));
+                    String err = ErrorParser.parse(response);
+                    Timber.w("getVigiaTurno erro HTTP: code=%d, body=%s", response.code(), err);
+                    result.setValue(Resource.error(err));
                     return;
                 }
 

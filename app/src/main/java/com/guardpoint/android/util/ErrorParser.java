@@ -35,6 +35,11 @@ public final class ErrorParser {
         return "Erro " + response.code();
     }
 
+    public static boolean isTokenExpirado(String errorMessage) {
+        if (errorMessage == null) return false;
+        return errorMessage.toLowerCase().contains("token expirado");
+    }
+
     private static String capitalize(String text) {
         if (text == null || text.isEmpty()) {
             return text;

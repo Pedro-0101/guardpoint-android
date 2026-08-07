@@ -27,6 +27,20 @@ public class AuthInterceptor implements Interceptor {
         Request request = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
-        return chain.proceed(request);
+        Response response = chain.proceed(request);
+
+        if (response.code() == 401) {
+            try {
+                okhttp3.ResponseBody peekBody = response.peekBody(Long.MAX_VALUE);
+                String bodyString = peekBody.string();
+                if (bodyString.contains("token expirado")) {
+                    securePrefs.clear();
+                }
+            } catch (Exception e) {
+                securePrefs.clear();
+            }
+        }
+
+        return response;
     }
 }

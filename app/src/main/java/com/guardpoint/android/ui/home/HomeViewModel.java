@@ -9,6 +9,7 @@ import com.guardpoint.android.data.remote.dto.CheckinResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.TurnoRepository;
+import com.guardpoint.android.util.ErrorParser;
 import com.guardpoint.android.util.NetworkMonitor;
 
 import timber.log.Timber;
@@ -59,6 +60,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<AcaoType> acaoType = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isProximoFinalizar = new MutableLiveData<>(false);
     private final MutableLiveData<String> relogioAtual = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> sessaoExpirada = new MutableLiveData<>();
 
     private Turno currentTurno;
     private LiveData<Resource<Turno>> turnoAtivoObservable;
@@ -88,6 +90,9 @@ public class HomeViewModel extends ViewModel {
                     turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
                 }
             } else if (resource.isError()) {
+                if (ErrorParser.isTokenExpirado(resource.getMessage())) {
+                    sessaoExpirada.postValue(true);
+                }
                 turnoState.postValue(TurnoState.NONE);
                 if (turnoAtivoObservable != null) {
                     turnoAtivoObservable.removeObserver(onTurnoAtivoLoaded);
@@ -233,6 +238,9 @@ public class HomeViewModel extends ViewModel {
                     acaoMensagem.postValue("home_turno_iniciado_sucesso");
                 } else if (resource.isError()) {
                     Timber.e("iniciarTurno erro: %s", resource.getMessage());
+                    if (ErrorParser.isTokenExpirado(resource.getMessage())) {
+                        sessaoExpirada.postValue(true);
+                    }
                     acaoMensagem.postValue(resource.getMessage());
                 }
             }
@@ -276,6 +284,9 @@ public class HomeViewModel extends ViewModel {
                     }
                 } else if (resource.isError()) {
                     Timber.e("enviarCheckin erro: %s", resource.getMessage());
+                    if (ErrorParser.isTokenExpirado(resource.getMessage())) {
+                        sessaoExpirada.postValue(true);
+                    }
                     acaoMensagem.postValue(resource.getMessage());
                 }
             }
@@ -305,6 +316,9 @@ public class HomeViewModel extends ViewModel {
                     acaoMensagem.postValue("home_turno_finalizado_sucesso");
                 } else if (resource.isError()) {
                     Timber.e("finalizarTurno erro: %s", resource.getMessage());
+                    if (ErrorParser.isTokenExpirado(resource.getMessage())) {
+                        sessaoExpirada.postValue(true);
+                    }
                     acaoMensagem.postValue(resource.getMessage());
                 }
             }
@@ -328,6 +342,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<AcaoType> getAcaoType() { return acaoType; }
     public LiveData<Boolean> getIsProximoFinalizar() { return isProximoFinalizar; }
     public LiveData<String> getRelogioAtual() { return relogioAtual; }
+    public LiveData<Boolean> getSessaoExpirada() { return sessaoExpirada; }
     public Turno getCurrentTurno() { return currentTurno; }
 
     private String formatarData(long millis) {

@@ -63,6 +63,11 @@
     <string name="home_hora_atual">Hora atual</string>
     <string name="home_erro_fora_horario">O turno ainda não pode ser iniciado. Aguarde o horário previsto.</string>
 
+    <!-- Token Expirado -->
+    <string name="token_expirado_title">Sessão expirada</string>
+    <string name="token_expirado_message">Sua sessão expirou. Faça login novamente para continuar.</string>
+    <string name="token_expirado_button">Ir para o login</string>
+
     <!-- Sidebar / Navigation -->
     <string name="nav_home">Início</string>
     <string name="nav_turnos">Turnos</string>
