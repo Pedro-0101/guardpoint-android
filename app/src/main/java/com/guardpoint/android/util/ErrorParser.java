@@ -24,10 +24,11 @@ public final class ErrorParser {
     public static ApiErrorResult parse(Response<?> response) {
         int statusCode = response.code();
         String rawError = null;
+        String rawBody = null;
 
         if (response.errorBody() != null) {
             try {
-                String rawBody = response.errorBody().string();
+                rawBody = response.errorBody().string();
                 ApiError apiError = gson.fromJson(rawBody, ApiError.class);
                 rawError = apiError.getDisplayMessage();
             } catch (IOException e) {
@@ -41,13 +42,13 @@ public final class ErrorParser {
             rawError = "Erro " + statusCode;
         }
 
-        return buildResult(statusCode, rawError);
+        return buildResult(statusCode, rawError, rawBody);
     }
 
-    private static ApiErrorResult buildResult(int statusCode, String rawError) {
+    private static ApiErrorResult buildResult(int statusCode, String rawError, String rawBody) {
         String userMessage = resolveUserMessage(statusCode, rawError);
         Map<String, String> validationErrors = statusCode == 422
-                ? parseValidationErrors(rawError)
+                ? parseValidationErrors(rawError, rawBody)
                 : Collections.emptyMap();
 
         return new ApiErrorResult(statusCode, rawError, userMessage, validationErrors);
@@ -64,7 +65,7 @@ public final class ErrorParser {
             case 409:
                 return resolveConflictMessage(rawError);
             case 422:
-                return "Dados invalidos. Verifique os campos destacados.";
+                return "Dados invalidos.";
             case 500:
                 return "Erro inesperado. Tente novamente.";
             default:
@@ -185,16 +186,47 @@ public final class ErrorParser {
     }
 
     public static Map<String, String> parseValidationErrors(String message) {
-        if (message == null) {
+        return parseValidationErrors(message, null);
+    }
+
+    public static Map<String, String> parseValidationErrors(String message, String rawBody) {
+        if (message == null && rawBody == null) {
             return Collections.emptyMap();
         }
+
         Map<String, String> errors = new LinkedHashMap<>();
-        Matcher matcher = VALIDATION_PATTERN.matcher(message);
-        while (matcher.find()) {
-            String campo = matcher.group(1);
-            String regra = matcher.group(2);
-            errors.put(campo, regra.contains("=") ? regra.substring(0, regra.indexOf('=')) : regra);
+
+        if (message != null) {
+            Matcher matcher = VALIDATION_PATTERN.matcher(message);
+            while (matcher.find()) {
+                String campo = matcher.group(1);
+                String regra = matcher.group(2);
+                errors.put(campo, regra.contains("=") ? regra.substring(0, regra.indexOf('=')) : regra);
+            }
         }
+
+        if (errors.isEmpty() && rawBody != null) {
+            try {
+                com.google.gson.JsonObject json = gson.fromJson(rawBody, com.google.gson.JsonObject.class);
+                if (json != null && json.has("errors")) {
+                    com.google.gson.reflect.TypeToken<Map<String, java.util.List<String>>> typeToken =
+                            new com.google.gson.reflect.TypeToken<Map<String, java.util.List<String>>>() {};
+                    Map<String, java.util.List<String>> bodyErrors =
+                            gson.fromJson(json.get("errors"), typeToken.getType());
+                    if (bodyErrors != null) {
+                        for (Map.Entry<String, java.util.List<String>> entry : bodyErrors.entrySet()) {
+                            java.util.List<String> msgs = entry.getValue();
+                            if (msgs != null && !msgs.isEmpty()) {
+                                errors.put(entry.getKey(), msgs.get(0));
+                            }
+                        }
+                    }
+                }
+            } catch (com.google.gson.JsonSyntaxException ignored) {
+                Timber.d("ErrorParser: rawBody nao e um mapa de erros por campo");
+            }
+        }
+
         return errors;
     }
 

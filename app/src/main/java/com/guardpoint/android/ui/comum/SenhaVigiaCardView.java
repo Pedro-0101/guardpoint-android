@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.guardpoint.android.R;
+
+import java.util.Map;
 
 public class SenhaVigiaCardView extends LinearLayout {
 
@@ -92,6 +95,21 @@ public class SenhaVigiaCardView extends LinearLayout {
 
     public void mostrarErro(String mensagem) {
         Snackbar.make(this, mensagem, Snackbar.LENGTH_LONG).show();
+    }
+
+    public void mostrarErroCampo(Map<String, String> fieldErrors) {
+        if (fieldErrors == null || fieldErrors.isEmpty()) return;
+
+        String errorMessage = fieldErrors.get("senha");
+        if (errorMessage == null) {
+            errorMessage = fieldErrors.get("password");
+        }
+
+        if (errorMessage != null) {
+            inputLayoutSenha.setError(errorMessage);
+            etSenha.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.shake));
+            etSenha.requestFocus();
+        }
     }
 
     private boolean bloqueado = false;

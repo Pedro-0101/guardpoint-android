@@ -17,8 +17,10 @@ import timber.log.Timber;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,6 +64,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> relogioAtual = new MutableLiveData<>();
     private final MutableLiveData<Boolean> sessaoExpirada = new MutableLiveData<>();
     private final MutableLiveData<Boolean> sessaoRevogada = new MutableLiveData<>();
+    private final MutableLiveData<Map<String, String>> acaoFieldErrors = new MutableLiveData<>();
 
     private Turno currentTurno;
     private LiveData<Resource<Turno>> turnoAtivoObservable;
@@ -282,6 +285,9 @@ public class HomeViewModel extends ViewModel {
                         sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
+                    if (resource.hasFieldErrors()) {
+                        acaoFieldErrors.postValue(resource.getFieldErrors());
+                    }
                 }
             }
         });
@@ -331,6 +337,9 @@ public class HomeViewModel extends ViewModel {
                         sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
+                    if (resource.hasFieldErrors()) {
+                        acaoFieldErrors.postValue(resource.getFieldErrors());
+                    }
                 }
             }
         });
@@ -366,6 +375,9 @@ public class HomeViewModel extends ViewModel {
                         sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
+                    if (resource.hasFieldErrors()) {
+                        acaoFieldErrors.postValue(resource.getFieldErrors());
+                    }
                 }
             }
         });
@@ -390,6 +402,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<String> getRelogioAtual() { return relogioAtual; }
     public LiveData<Boolean> getSessaoExpirada() { return sessaoExpirada; }
     public LiveData<Boolean> getSessaoRevogada() { return sessaoRevogada; }
+    public LiveData<Map<String, String>> getAcaoFieldErrors() { return acaoFieldErrors; }
     public Turno getCurrentTurno() { return currentTurno; }
 
     private String formatarData(long millis) {

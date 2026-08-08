@@ -223,6 +223,12 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.getAcaoFieldErrors().observe(this, fieldErrors -> {
+            if (fieldErrors != null && !fieldErrors.isEmpty()) {
+                senhaVigiaCard.mostrarErroCampo(fieldErrors);
+            }
+        });
+
         viewModel.getIsProximoFinalizar().observe(this, isFinalizar -> {
             if (isFinalizar != null && isFinalizar) {
                 tvTimerLabel.setText(R.string.home_tempo_finalizar_turno);
