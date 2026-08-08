@@ -68,6 +68,6 @@ public class Turno {
     }
 
     public long getTempoRestanteMillis() {
-        return Math.max(0, getDeadlineMillis() - System.currentTimeMillis());
+        return getDeadlineMillis() - System.currentTimeMillis();
     }
 }

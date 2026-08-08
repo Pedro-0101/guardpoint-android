@@ -241,6 +241,17 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.getIsAtrasado().observe(this, atrasado -> {
+            if (atrasado != null && atrasado) {
+                tvTimerLabel.setText(R.string.home_tempo_atraso);
+            } else if (viewModel.getIsProximoFinalizar().getValue() != null
+                    && viewModel.getIsProximoFinalizar().getValue()) {
+                tvTimerLabel.setText(R.string.home_tempo_finalizar_turno);
+            } else {
+                tvTimerLabel.setText(R.string.home_tempo_proximo_checkin);
+            }
+        });
+
         viewModel.getAcaoType().observe(this, type -> {
             if (type == null) return;
             switch (type) {

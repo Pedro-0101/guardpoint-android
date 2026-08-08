@@ -61,6 +61,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<String> acaoMensagem = new MutableLiveData<>();
     private final MutableLiveData<AcaoType> acaoType = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isProximoFinalizar = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> isAtrasado = new MutableLiveData<>(false);
     private final MutableLiveData<String> relogioAtual = new MutableLiveData<>();
     private final MutableLiveData<Boolean> sessaoExpirada = new MutableLiveData<>();
     private final MutableLiveData<Boolean> sessaoRevogada = new MutableLiveData<>();
@@ -149,6 +150,7 @@ public class HomeViewModel extends ViewModel {
 
     private void iniciarTimer(Turno turno) {
         if (timer != null) timer.cancel();
+        isAtrasado.postValue(false);
         Timber.i("Timer iniciado: deadline=%d, restante=%dms",
                 turno.getDeadlineMillis(), turno.getTempoRestanteMillis());
         timer = new Timer();
@@ -156,17 +158,21 @@ public class HomeViewModel extends ViewModel {
             @Override
             public void run() {
                 long resto = turno.getTempoRestanteMillis();
-                if (resto <= 0) {
-                    tempoRestante.postValue("00:00");
-                    return;
-                }
-                long minutos = (resto / 60000) % 60;
-                long horas = resto / 3600000;
-                if (horas > 0) {
-                    tempoRestante.postValue(String.format("%02d:%02d", horas, minutos));
+                if (resto > 0) {
+                    isAtrasado.postValue(false);
+                    long minutos = (resto / 60000) % 60;
+                    long horas = resto / 3600000;
+                    if (horas > 0) {
+                        tempoRestante.postValue(String.format("%02d:%02d", horas, minutos));
+                    } else {
+                        long segundos = (resto / 1000) % 60;
+                        tempoRestante.postValue(String.format("%02d:%02d", minutos, segundos));
+                    }
                 } else {
-                    long segundos = (resto / 1000) % 60;
-                    tempoRestante.postValue(String.format("%02d:%02d", minutos, segundos));
+                    isAtrasado.postValue(true);
+                    long atrasoMillis = Math.abs(resto);
+                    long atrasoMinutos = (atrasoMillis / 60000) + 1;
+                    tempoRestante.postValue("Atraso " + atrasoMinutos + " min");
                 }
             }
         }, 0, 1000);
@@ -399,6 +405,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<String> getAcaoMensagem() { return acaoMensagem; }
     public LiveData<AcaoType> getAcaoType() { return acaoType; }
     public LiveData<Boolean> getIsProximoFinalizar() { return isProximoFinalizar; }
+    public LiveData<Boolean> getIsAtrasado() { return isAtrasado; }
     public LiveData<String> getRelogioAtual() { return relogioAtual; }
     public LiveData<Boolean> getSessaoExpirada() { return sessaoExpirada; }
     public LiveData<Boolean> getSessaoRevogada() { return sessaoRevogada; }
