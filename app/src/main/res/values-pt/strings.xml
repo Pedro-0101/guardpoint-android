@@ -36,6 +36,9 @@
     <string name="token_expirado_title">Sessão expirada</string>
     <string name="token_expirado_message">Sua sessão expirou. Faça login novamente para continuar.</string>
     <string name="token_expirado_button">Ir para o login</string>
+    <string name="sessao_revogada_title">Sessão revogada</string>
+    <string name="sessao_revogada_message">Sua sessão foi revogada. Reassocie o turno com o PIN ou faça login novamente.</string>
+    <string name="sessao_revogada_button">Ir para o login</string>
     <string name="nav_home">Início</string>
     <string name="nav_turnos">Turnos</string>
     <string name="nav_checkin">Check-in</string>

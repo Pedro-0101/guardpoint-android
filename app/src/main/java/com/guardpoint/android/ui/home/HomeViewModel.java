@@ -61,6 +61,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isProximoFinalizar = new MutableLiveData<>(false);
     private final MutableLiveData<String> relogioAtual = new MutableLiveData<>();
     private final MutableLiveData<Boolean> sessaoExpirada = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> sessaoRevogada = new MutableLiveData<>();
 
     private Turno currentTurno;
     private LiveData<Resource<Turno>> turnoAtivoObservable;
@@ -93,6 +94,9 @@ public class HomeViewModel extends ViewModel {
             } else if (resource.isError()) {
                 if (ErrorParser.isTokenExpirado(resource.getMessage())) {
                     sessaoExpirada.postValue(true);
+                } else if (resource.getErrorCode() == 403 && resource.getMessage() != null
+                        && resource.getMessage().contains("sessao revogada")) {
+                    sessaoRevogada.postValue(true);
                 }
                 turnoState.postValue(TurnoState.NONE);
                 if (turnoAtivoObservable != null) {
@@ -273,6 +277,9 @@ public class HomeViewModel extends ViewModel {
                     Timber.e("iniciarTurno erro: %s", resource.getMessage());
                     if (ErrorParser.isTokenExpirado(resource.getMessage())) {
                         sessaoExpirada.postValue(true);
+                    } else if (resource.getErrorCode() == 403 && resource.getMessage() != null
+                            && resource.getMessage().contains("sessao revogada")) {
+                        sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
                 }
@@ -319,6 +326,9 @@ public class HomeViewModel extends ViewModel {
                     Timber.e("enviarCheckin erro: %s", resource.getMessage());
                     if (ErrorParser.isTokenExpirado(resource.getMessage())) {
                         sessaoExpirada.postValue(true);
+                    } else if (resource.getErrorCode() == 403 && resource.getMessage() != null
+                            && resource.getMessage().contains("sessao revogada")) {
+                        sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
                 }
@@ -351,6 +361,9 @@ public class HomeViewModel extends ViewModel {
                     Timber.e("finalizarTurno erro: %s", resource.getMessage());
                     if (ErrorParser.isTokenExpirado(resource.getMessage())) {
                         sessaoExpirada.postValue(true);
+                    } else if (resource.getErrorCode() == 403 && resource.getMessage() != null
+                            && resource.getMessage().contains("sessao revogada")) {
+                        sessaoRevogada.postValue(true);
                     }
                     acaoMensagem.postValue(resource.getMessage());
                 }
@@ -376,6 +389,7 @@ public class HomeViewModel extends ViewModel {
     public LiveData<Boolean> getIsProximoFinalizar() { return isProximoFinalizar; }
     public LiveData<String> getRelogioAtual() { return relogioAtual; }
     public LiveData<Boolean> getSessaoExpirada() { return sessaoExpirada; }
+    public LiveData<Boolean> getSessaoRevogada() { return sessaoRevogada; }
     public Turno getCurrentTurno() { return currentTurno; }
 
     private String formatarData(long millis) {

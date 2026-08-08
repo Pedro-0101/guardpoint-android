@@ -17,6 +17,7 @@ import com.guardpoint.android.data.remote.dto.TurnoResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.TurnoRepository;
+import com.guardpoint.android.util.ApiErrorResult;
 import com.guardpoint.android.util.ErrorParser;
 
 import timber.log.Timber;
@@ -53,9 +54,10 @@ public class TurnoRepositoryImpl implements TurnoRepository {
             @Override
             public void onResponse(@NonNull Call<VigiaTurnoResponse> call, @NonNull Response<VigiaTurnoResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    String err = ErrorParser.parse(response);
-                    Timber.w("getVigiaTurno erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.w("getVigiaTurno erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                     return;
                 }
 
@@ -138,9 +140,10 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     result.setValue(Resource.success(
                             mapToDomain(body.getTurno(), System.currentTimeMillis(), proximoDeadlineMillis, tipoProximoDeadline)));
                 } else {
-                    String err = ErrorParser.parse(response);
-                    Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 
@@ -172,9 +175,10 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                             body.getTipoProximoDeadline(), body.isAtrasado());
                     result.setValue(Resource.success(response.body()));
                 } else {
-                    String err = ErrorParser.parse(response);
-                    Timber.e("checkin erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.e("checkin erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 
@@ -203,9 +207,10 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     Timber.i("finalizarTurno OK: status=%s", response.body().getStatus());
                     result.setValue(Resource.success(mapToDomain(response.body())));
                 } else {
-                    String err = ErrorParser.parse(response);
-                    Timber.e("finalizarTurno erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.e("finalizarTurno erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 

@@ -257,6 +257,12 @@ public class HomeActivity extends AppCompatActivity {
                 showTokenExpiradoDialog();
             }
         });
+
+        viewModel.getSessaoRevogada().observe(this, revogada -> {
+            if (Boolean.TRUE.equals(revogada)) {
+                showSessaoRevogadaDialog();
+            }
+        });
     }
 
     private void setupActionButtons() {
@@ -336,6 +342,21 @@ public class HomeActivity extends AppCompatActivity {
                 .setTitle(R.string.token_expirado_title)
                 .setMessage(R.string.token_expirado_message)
                 .setPositiveButton(R.string.token_expirado_button, (dialog, which) -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.fade_out);
+                    finish();
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private void showSessaoRevogadaDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.sessao_revogada_title)
+                .setMessage(R.string.sessao_revogada_message)
+                .setPositiveButton(R.string.sessao_revogada_button, (dialog, which) -> {
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

@@ -2,7 +2,7 @@ package com.guardpoint.android.util;
 
 public class Constants {
     private static final String URL_LOCALHOST = "http://10.0.2.2:8080/api/v1/";
-    private static final String URL_PRODUCTION = "http://guardpoint-server-production.up.railway.app:8080/api/v1/";
+    private static final String URL_PRODUCTION = "https://guardpoint-server-production.up.railway.app/api/v1/";
 
     public static final String BASE_URL = AppEnvironment.current() == AppEnvironment.DEVELOPMENT
             ? URL_LOCALHOST

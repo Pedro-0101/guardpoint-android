@@ -14,6 +14,7 @@ import com.guardpoint.android.data.remote.dto.GenericResponse;
 import com.guardpoint.android.data.remote.dto.LoginResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.repository.AuthRepository;
+import com.guardpoint.android.util.ApiErrorResult;
 import com.guardpoint.android.util.ErrorParser;
 
 import javax.inject.Inject;
@@ -65,7 +66,9 @@ public class AuthRepositoryImpl implements AuthRepository {
                     }
                     result.setValue(Resource.success(body));
                 } else {
-                    result.setValue(Resource.error(ErrorParser.parse(response)));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 
@@ -94,9 +97,10 @@ public class AuthRepositoryImpl implements AuthRepository {
                     Timber.i("Dispositivo registrado: device_id=%s", body.getDeviceId());
                     result.setValue(Resource.success(body));
                 } else {
-                    String err = ErrorParser.parse(response);
-                    Timber.e("registerDevice erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.e("registerDevice erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 
@@ -132,9 +136,10 @@ public class AuthRepositoryImpl implements AuthRepository {
                     Timber.i("Login biometrico OK: usuario=%s", body.getUsuario() != null ? body.getUsuario().getNome() : "?");
                     result.setValue(Resource.success(body));
                 } else {
-                    String err = ErrorParser.parse(response);
-                    Timber.e("loginBiometric erro HTTP: code=%d, body=%s", response.code(), err);
-                    result.setValue(Resource.error(err));
+                    ApiErrorResult err = ErrorParser.parse(response);
+                    Timber.e("loginBiometric erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
+                    result.setValue(Resource.error(err.getUserMessage(),
+                            err.getStatusCode(), err.getValidationErrors()));
                 }
             }
 
