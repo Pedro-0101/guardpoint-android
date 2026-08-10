@@ -89,7 +89,8 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                             ultimoCheckinMillis,
                             parseIso8601(info.getInicioPrevisto()),
                             parseIso8601(info.getProximoDeadline()),
-                            info.getTipoProximoDeadline()
+                            info.getTipoProximoDeadline(),
+                            parseIso8601(info.getFimPrevisto())
                     )));
                 } else if (!body.isTemTurnoAtivo() && body.getProximoTurno() != null) {
                     VigiaProximoTurno prox = body.getProximoTurno();
@@ -137,8 +138,9 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                     Timber.i("iniciarTurno OK: atrasado=%s, proximoDeadline=%s", body.isAtrasado(), body.getProximoDeadline());
                     long proximoDeadlineMillis = parseIso8601(body.getProximoDeadline());
                     String tipoProximoDeadline = body.getTipoProximoDeadline();
+                    long fimPrevistoMillis = parseIso8601(body.getTurno().getFimPrevisto());
                     result.setValue(Resource.success(
-                            mapToDomain(body.getTurno(), System.currentTimeMillis(), proximoDeadlineMillis, tipoProximoDeadline)));
+                            mapToDomain(body.getTurno(), System.currentTimeMillis(), proximoDeadlineMillis, tipoProximoDeadline, fimPrevistoMillis)));
                 } else {
                     ApiErrorResult err = ErrorParser.parse(response);
                     Timber.e("iniciarTurno erro HTTP: code=%d, body=%s", response.code(), err.getRawError());
@@ -238,7 +240,8 @@ public class TurnoRepositoryImpl implements TurnoRepository {
     }
 
     private Turno mapToDomain(TurnoResponse response, long ultimoCheckinMillis,
-                              long proximoDeadlineMillis, String tipoProximoDeadline) {
+                              long proximoDeadlineMillis, String tipoProximoDeadline,
+                              long fimPrevistoMillis) {
         return new Turno(
                 response.getTurnoId(),
                 response.getPostoId(),
@@ -249,7 +252,8 @@ public class TurnoRepositoryImpl implements TurnoRepository {
                 ultimoCheckinMillis,
                 parseIso8601(response.getInicioPrevisto()),
                 proximoDeadlineMillis,
-                tipoProximoDeadline
+                tipoProximoDeadline,
+                fimPrevistoMillis
         );
     }
 

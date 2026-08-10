@@ -12,25 +12,35 @@ public class Turno {
     private final long inicioPrevistoMillis;
     private final long proximoDeadlineMillis;
     private final String tipoProximoDeadline;
+    private final long fimPrevistoMillis;
 
     public Turno(String turnoId, String postoId, String postoNome, int intervaloMinutos,
                  String tokenSessao, String status, long ultimoCheckinMillis,
                  long inicioPrevistoMillis) {
         this(turnoId, postoId, postoNome, intervaloMinutos, tokenSessao, status,
-                ultimoCheckinMillis, inicioPrevistoMillis, 0L, null);
+                ultimoCheckinMillis, inicioPrevistoMillis, 0L, null, 0L);
     }
 
     public Turno(String turnoId, String postoId, String postoNome, int intervaloMinutos,
                  String tokenSessao, String status, long ultimoCheckinMillis,
                  long inicioPrevistoMillis, long proximoDeadlineMillis) {
         this(turnoId, postoId, postoNome, intervaloMinutos, tokenSessao, status,
-                ultimoCheckinMillis, inicioPrevistoMillis, proximoDeadlineMillis, null);
+                ultimoCheckinMillis, inicioPrevistoMillis, proximoDeadlineMillis, null, 0L);
     }
 
     public Turno(String turnoId, String postoId, String postoNome, int intervaloMinutos,
                  String tokenSessao, String status, long ultimoCheckinMillis,
                  long inicioPrevistoMillis, long proximoDeadlineMillis,
                  String tipoProximoDeadline) {
+        this(turnoId, postoId, postoNome, intervaloMinutos, tokenSessao, status,
+                ultimoCheckinMillis, inicioPrevistoMillis, proximoDeadlineMillis,
+                tipoProximoDeadline, 0L);
+    }
+
+    public Turno(String turnoId, String postoId, String postoNome, int intervaloMinutos,
+                 String tokenSessao, String status, long ultimoCheckinMillis,
+                 long inicioPrevistoMillis, long proximoDeadlineMillis,
+                 String tipoProximoDeadline, long fimPrevistoMillis) {
         this.turnoId = turnoId;
         this.postoId = postoId;
         this.postoNome = postoNome;
@@ -41,6 +51,7 @@ public class Turno {
         this.inicioPrevistoMillis = inicioPrevistoMillis;
         this.proximoDeadlineMillis = proximoDeadlineMillis;
         this.tipoProximoDeadline = tipoProximoDeadline;
+        this.fimPrevistoMillis = fimPrevistoMillis;
     }
 
     public String getTurnoId() { return turnoId; }
@@ -53,9 +64,15 @@ public class Turno {
     public long getInicioPrevistoMillis() { return inicioPrevistoMillis; }
     public long getProximoDeadlineMillis() { return proximoDeadlineMillis; }
     public String getTipoProximoDeadline() { return tipoProximoDeadline; }
+    public long getFimPrevistoMillis() { return fimPrevistoMillis; }
 
     public boolean isProximoFinalizar() {
-        return "finalizar".equals(tipoProximoDeadline);
+        if ("finalizar".equals(tipoProximoDeadline)) return true;
+        if (fimPrevistoMillis > 0 && intervaloMinutos > 0 && proximoDeadlineMillis > 0) {
+            long agora = System.currentTimeMillis();
+            if (agora + (intervaloMinutos * 60L * 1000L) >= fimPrevistoMillis) return true;
+        }
+        return false;
     }
 
     public boolean isProximoCheckin() {

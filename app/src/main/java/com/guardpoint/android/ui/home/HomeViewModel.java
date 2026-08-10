@@ -327,7 +327,8 @@ public class HomeViewModel extends ViewModel {
                                     System.currentTimeMillis(),
                                     currentTurno.getInicioPrevistoMillis(),
                                     novoDeadline,
-                                    tipoProximo
+                                    tipoProximo,
+                                    currentTurno.getFimPrevistoMillis()
                             );
                             isProximoFinalizar.postValue(currentTurno.isProximoFinalizar());
                             iniciarTimer(currentTurno);
