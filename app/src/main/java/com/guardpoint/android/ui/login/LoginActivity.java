@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvErrorText;
     private TextView tvError;
 
-    private boolean isVigiaMode = false;
+    private boolean isVigiaMode = true;
     private String deviceId;
 
     private BiometricPrompt biometricPrompt;
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                if (viewModel.hasDeviceSecret() && viewModel.hasValidSession()) {
+                if (viewModel.hasDeviceSecret()) {
                     fazerLoginBiometrico();
                 } else if (viewModel.hasValidSession()) {
                     navigateToHome();

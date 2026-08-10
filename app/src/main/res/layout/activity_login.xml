@@ -57,15 +57,15 @@
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_tab_admin"
-                        android:checked="true" />
+                        android:text="@string/login_tab_admin" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chipVigia"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login_tab_vigia" />
+                        android:text="@string/login_tab_vigia"
+                        android:checked="true" />
 
                 </com.google.android.material.chip.ChipGroup>
 
