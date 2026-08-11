@@ -123,9 +123,6 @@ public final class ErrorParser {
         if (rawError.contains("turno associado a outro dispositivo")) {
             return "Este turno esta associado a outro dispositivo.";
         }
-        if (rawError.contains("turno ja finalizado")) {
-            return "Este turno ja foi finalizado.";
-        }
         if (rawError.contains("horario de inicio fora da tolerancia")) {
             return "Fora do horario permitido para iniciar o turno.";
         }
@@ -172,6 +169,9 @@ public final class ErrorParser {
     private static String resolveConflictMessage(String rawError) {
         if (rawError == null) {
             return "Conflito";
+        }
+        if (rawError.contains("turno ja finalizado")) {
+            return "Este turno ja foi finalizado.";
         }
         if (rawError.contains("usuario ja possui um turno em andamento")) {
             return "Voce ja possui um turno em andamento.";
