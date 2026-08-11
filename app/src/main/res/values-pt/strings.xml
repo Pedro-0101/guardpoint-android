@@ -63,4 +63,5 @@
     <string name="home_tempo_atraso">Atraso</string>
     <string name="home_hora_atual">Hora atual</string>
     <string name="home_erro_fora_horario">O turno ainda não pode ser iniciado. Aguarde o horário previsto.</string>
+    <string name="home_erro_finalizar_fora_horario">O turno ainda não pode ser finalizado. Aguarde o horário previsto.</string>
 </resources>

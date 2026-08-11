@@ -237,7 +237,7 @@ public class HomeActivity extends AppCompatActivity {
             } else {
                 tvTimerLabel.setText(R.string.home_tempo_proximo_checkin);
                 btnCheckin.setVisibility(View.VISIBLE);
-                btnFinalizarTurno.setVisibility(View.VISIBLE);
+                btnFinalizarTurno.setVisibility(View.GONE);
             }
         });
 

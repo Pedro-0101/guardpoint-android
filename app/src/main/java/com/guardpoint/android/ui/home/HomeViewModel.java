@@ -263,6 +263,14 @@ public class HomeViewModel extends ViewModel {
                 enviarCheckin(deviceId, latitude, longitude, senha);
                 break;
             case FINALIZAR_TURNO:
+                long agoraFinalizar = System.currentTimeMillis();
+                long fimPrevisto = currentTurno.getFimPrevistoMillis();
+                if (fimPrevisto > 0 && agoraFinalizar < fimPrevisto) {
+                    isActionLoading.setValue(false);
+                    acaoMensagem.postValue("home_erro_finalizar_fora_horario");
+                    Timber.w("Bloqueado: tentativa de finalizar turno antes do horario previsto (agora=%d, fimPrevisto=%d)", agoraFinalizar, fimPrevisto);
+                    return;
+                }
                 finalizarTurno(deviceId, latitude, longitude, senha);
                 break;
         }
