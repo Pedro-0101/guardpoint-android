@@ -5,10 +5,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.guardpoint.android.data.local.prefs.SecurePrefs;
 import com.guardpoint.android.data.remote.dto.CheckinResponse;
 import com.guardpoint.android.domain.model.Resource;
 import com.guardpoint.android.domain.model.Turno;
 import com.guardpoint.android.domain.repository.TurnoRepository;
+import com.guardpoint.android.util.Constants;
 import com.guardpoint.android.util.ErrorParser;
 import com.guardpoint.android.util.NetworkMonitor;
 
@@ -48,7 +50,7 @@ public class HomeViewModel extends ViewModel {
 
     private final TurnoRepository turnoRepository;
     private final NetworkMonitor networkMonitor;
-    private final com.guardpoint.android.data.local.prefs.SecurePrefs securePrefs;
+    private final SecurePrefs securePrefs;
 
     private final MutableLiveData<TurnoState> turnoState = new MutableLiveData<>(TurnoState.LOADING);
     private final MutableLiveData<String> tempoRestante = new MutableLiveData<>();
@@ -77,7 +79,7 @@ public class HomeViewModel extends ViewModel {
     @Inject
     public HomeViewModel(TurnoRepository turnoRepository,
                          NetworkMonitor networkMonitor,
-                         com.guardpoint.android.data.local.prefs.SecurePrefs securePrefs) {
+                         SecurePrefs securePrefs) {
         this.turnoRepository = turnoRepository;
         this.networkMonitor = networkMonitor;
         this.securePrefs = securePrefs;
@@ -420,6 +422,44 @@ public class HomeViewModel extends ViewModel {
     public LiveData<Boolean> getSessaoRevogada() { return sessaoRevogada; }
     public LiveData<Map<String, String>> getAcaoFieldErrors() { return acaoFieldErrors; }
     public Turno getCurrentTurno() { return currentTurno; }
+
+    public boolean isSessionInvalid() {
+        long lastActivity = securePrefs.getLastActivityMillis();
+        long now = System.currentTimeMillis();
+        if (lastActivity > 0 && (now - lastActivity) > Constants.SESSION_INACTIVITY_TIMEOUT_MILLIS) {
+            Timber.w("Sessão expirada por inatividade: %dms desde última atividade", now - lastActivity);
+            return true;
+        }
+
+        String token = securePrefs.getAccessToken();
+        if (token == null || token.isEmpty()) return true;
+        try {
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) return true;
+            String payload = new String(android.util.Base64.decode(parts[1], android.util.Base64.DEFAULT));
+            long exp = new com.google.gson.Gson().fromJson(payload, JwtPayload.class).exp;
+            return (exp * 1000L) <= now;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public void clearSession() {
+        securePrefs.clear();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        if (timerRelogio != null) {
+            timerRelogio.cancel();
+            timerRelogio = null;
+        }
+        cancelarTimerDesbloqueio();
+    }
+
+    private static class JwtPayload {
+        long exp;
+    }
 
     private String formatarData(long millis) {
         Calendar hoje = Calendar.getInstance();

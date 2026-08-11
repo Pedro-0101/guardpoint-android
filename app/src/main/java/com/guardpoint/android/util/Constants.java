@@ -17,4 +17,6 @@ public class Constants {
     public static final String KEY_BIOMETRIC_ENABLED = "biometric_enabled";
     public static final String KEY_DEVICE_SECRET = "device_secret";
     public static final String KEY_POSTO_NOME = "posto_nome";
+    public static final String KEY_LAST_ACTIVITY_MILLIS = "last_activity_millis";
+    public static final long SESSION_INACTIVITY_TIMEOUT_MILLIS = 5 * 60 * 1000;
 }

@@ -103,6 +103,14 @@ public class SecurePrefs {
         return prefs.getString(Constants.KEY_POSTO_NOME, null);
     }
 
+    public void saveLastActivityMillis(long millis) {
+        prefs.edit().putLong(Constants.KEY_LAST_ACTIVITY_MILLIS, millis).apply();
+    }
+
+    public long getLastActivityMillis() {
+        return prefs.getLong(Constants.KEY_LAST_ACTIVITY_MILLIS, 0);
+    }
+
     public void clear() {
         prefs.edit()
                 .remove(Constants.KEY_JWT_TOKEN)

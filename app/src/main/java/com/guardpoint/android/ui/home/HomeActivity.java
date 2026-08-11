@@ -87,6 +87,15 @@ public class HomeActivity extends AppCompatActivity {
         viewModel.carregarTurnoAtivo();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (viewModel.isSessionInvalid()) {
+            viewModel.clearSession();
+            showTokenExpiradoDialog();
+        }
+    }
+
     private void bindViews() {
         tvWelcome = findViewById(R.id.tvWelcome);
         tvRole = findViewById(R.id.tvRole);
